@@ -1,0 +1,13 @@
+version: '2'
+services:
+  backend:
+    build: .
+    image: cloudhost/backend_production:latest
+    command: npm run start    
+    networks:
+      - app
+      - users
+    depends_on:
+      - mysql
+    ports:
+      - '3000:3000'

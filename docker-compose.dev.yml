@@ -1,0 +1,18 @@
+version: '2'
+services:
+  backend:
+    build: 
+      context: .
+      dockerfile: dev.dockerfile
+    image: cloudhost/backend_development:latest
+    command: npm run dev
+    volumes:
+      - .:/usr/app/backend/
+      - /usr/app/frontend/node_modules
+    networks:
+      - app
+      - users
+    depends_on:
+      - mysql
+    ports:
+      - '3000:3000'

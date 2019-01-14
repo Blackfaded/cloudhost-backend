@@ -1,0 +1,18 @@
+version: '2'
+services:
+  mysql:
+    image: mysql
+    restart: always
+    networks:
+      - app
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: cloudhost
+
+networks:
+  app:
+    driver: bridge
+  users:
+    driver: bridge
