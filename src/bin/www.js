@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { appLogger } from '../config/winston';
+
 /**
  * Module dependencies.
  */
@@ -82,8 +84,8 @@ function onError(error) {
 
 function onListening() {
 	const addr = server.address();
-	const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-	debug(`Listening on ${bind}`);
+	debug(`Listening on http://localhost:${addr.port}`);
+	appLogger.info('app started');
 }
 
 export default server;

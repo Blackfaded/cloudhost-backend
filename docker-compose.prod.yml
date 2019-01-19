@@ -7,6 +7,7 @@ services:
   networks:
    - app
    - users
+   - elk
   depends_on:
    - mysql
   ports:
