@@ -22,5 +22,14 @@ module.exports = {
 		'no-use-before-define': 0,
 		'no-shadow': 0,
 		'no-restricted-globals': 0
+	},
+	settings: {
+		'import/resolver': {
+			'babel-module': {
+				alias: {
+					'@': './src'
+				}
+			}
+		}
 	}
 };

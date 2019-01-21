@@ -1,8 +1,18 @@
 export default {
 	development: {
-		gitlab_url: 'https://git.hsrw.eu'
+		gitlab: {
+			domain: process.env.GITLAB_DOMAIN,
+			token: process.env.GITLAB_TOKEN,
+			app_id: process.env.GITLAB_APP_ID,
+			redirect_uri: process.env.GITLAB_REDIRECT_URI
+		}
 	},
 	production: {
-		gitlab_url: 'https://git.hsrw.eu'
+		gitlab: {
+			domain: process.env.GITLAB_DOMAIN,
+			token: process.env.GITLAB_TOKEN,
+			app_id: process.env.GITLAB_APP_ID,
+			redirect_uri: process.env.GITLAB_REDIRECT_URI
+		}
 	}
 }[process.env.NODE_ENV];

@@ -1,7 +1,28 @@
 import passport from 'passport';
 
+import { Strategy as JwtStrategy } from 'passport-jwt';
+
 export default (app) => {
 	app.use(passport.initialize());
+
+	const opts = {};
+	opts.jwtFromRequest = (req) => {
+		try {
+			const header = req.headers.authorization.split(' ');
+			return header[0] === 'bearer' || header[0] === 'Bearer' ? header[1] : null;
+		} catch (error) {
+			return null;
+		}
+	};
+	opts.secretOrKey = 'secret';
+
+	passport.use(
+		// eslint-disable-next-line
+		new JwtStrategy(opts, (jwt_payload, done) => {
+			console.log(jwt_payload);
+			done(null, jwt_payload);
+		})
+	);
 
 	/**
 	 * This function will be executed after a succuessful login and the user object

@@ -1,9 +1,8 @@
 import axios from 'axios';
+import connections from './connections';
 
 const instance = axios.create({
-	headers: {
-		'Private-Token': process.env.GITLAB_TOKEN
-	}
+	baseURL: connections.gitlab.domain
 });
 
 export default instance;

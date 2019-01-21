@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
+import fs from 'fs';
 import { appLogger } from '../config/winston';
 
-/**
- * Module dependencies.
- */
-require('dotenv').config();
+const envPath = `.env.${process.env.NODE_ENV}`;
+const opts = {};
+if (fs.existsSync(envPath)) {
+	opts.path = envPath;
+}
+
+require('dotenv').config(opts);
 
 const debug = require('debug')('cloudhost:server');
 const http = require('http');
