@@ -1,20 +1,23 @@
 version: '3.4'
 services:
-  mysql:
-    image: mysql
-    restart: always
-    networks:
-      - app
-    ports:
-      - '3306:3306'
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: cloudhost
+ mysql:
+  image: mysql:5.7.24
+  restart: always
+  networks:
+   - app
+  ports:
+   - '3306:3306'
+  env_file:
+   - .env.development
+  environment:
+   GITLAB_TOKEN: ''
+   GITLAB_DOMAIN: ''
+   GITLAB_APP_ID: ''
 
 networks:
-  app:
-    driver: bridge
-  users:
-    driver: bridge
-  elk_elk:
-    external: true
+ app:
+  driver: bridge
+ users:
+  driver: bridge
+ elk_elk:
+  external: true

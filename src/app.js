@@ -7,11 +7,10 @@ import configPassport from './config/passport';
 import { httpLogger } from './config/winston';
 import routes from './routes';
 
-const debug = require('debug')('cloudhost:app');
+// const debug = require('debug')('cloudhost:app');
 
 console.log(process.env.ES_RUNNING);
 console.log(process.env.DEBUG);
-debug('test');
 
 const app = express();
 

@@ -1,18 +1,11 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-import { appLogger } from '../config/winston';
-
-const envPath = `.env.${process.env.NODE_ENV}`;
-const opts = {};
-if (fs.existsSync(envPath)) {
-	opts.path = envPath;
-}
-
-require('dotenv').config(opts);
+import http from 'http';
+import { appLogger } from '@/config/winston';
+import models from '@/database/models';
+import umzug from '@/database/umzug';
 
 const debug = require('debug')('cloudhost:server');
-const http = require('http');
 const app = require('../app');
 
 /**
@@ -32,9 +25,15 @@ const server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+models.sequelize.sync().then(() => {
+	/**
+	 * Listen on provided port, on all network interfaces.
+	 */
+	umzug.up();
+	server.listen(port);
+	server.on('error', onError);
+	server.on('listening', onListening);
+});
 
 /**
  * Normalize a port into a number, string, or false.

@@ -8,6 +8,8 @@ services:
    - app
    - users
    - elk
+  env_file:
+   - .env
   depends_on:
    - mysql
   ports:
