@@ -9,7 +9,8 @@ module.exports = async (user) => {
 		gitlabId: user.id,
 		gitlabAccessToken: user.accessToken,
 		username: user.name,
-		lastLogin: moment()
+		lastLogin: moment(),
+		profilePictureUrl: user.avatar_url
 	};
 
 	const rolesToAssign = ['user'];

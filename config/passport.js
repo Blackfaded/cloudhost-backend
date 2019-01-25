@@ -1,5 +1,6 @@
 const passport = require('passport');
 const { Strategy: JwtStrategy } = require('passport-jwt');
+const config = require('../config/connections');
 const { findUserByEmailPlain } = require('../controllers/user');
 
 module.exports = (app) => {
@@ -14,12 +15,13 @@ module.exports = (app) => {
 			return null;
 		}
 	};
-	opts.secretOrKey = 'secret';
+	opts.secretOrKey = config.jwt.secret;
 
 	passport.use(
 		// eslint-disable-next-line
 		new JwtStrategy(opts, async (jwt_payload, done) => {
 			try {
+				console.log(jwt_payload);
 				const user = await findUserByEmailPlain(jwt_payload.email);
 				return done(null, user);
 			} catch (error) {

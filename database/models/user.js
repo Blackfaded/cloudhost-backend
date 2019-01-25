@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
 
 		lastLogin: DataTypes.DATE,
 		mongoContainerId: DataTypes.STRING,
-		mongoExpressContainerId: DataTypes.STRING
+		mongoExpressContainerId: DataTypes.STRING,
+		profilePictureUrl: DataTypes.STRING
 	});
 
 	User.associate = (models) => {
