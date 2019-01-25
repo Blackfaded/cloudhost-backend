@@ -1,12 +1,15 @@
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
-import passport from 'passport';
-import cors from 'cors';
-import configPassport from './config/passport';
-import { httpLogger } from './config/winston';
-import routes from './routes';
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const cors = require('cors');
+const configPassport = require('./config/passport');
 
+const { httpLogger } = require('./config/winston');
+
+const routes = require('./routes');
+
+console.log(httpLogger);
 // const debug = require('debug')('cloudhost:app');
 
 console.log(process.env.ES_RUNNING);

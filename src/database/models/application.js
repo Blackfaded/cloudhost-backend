@@ -1,4 +1,4 @@
-export default (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
 	const Application = sequelize.define('Application', {
 		repositoryName: DataTypes.STRING,
 		repositoryId: DataTypes.STRING,

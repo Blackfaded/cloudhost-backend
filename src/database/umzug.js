@@ -1,6 +1,6 @@
-import path from 'path';
-import Umzug from 'umzug';
-import db from './models';
+const path = require('path');
+const Umzug = require('umzug');
+const db = require('./models');
 
 const umzug = new Umzug({
 	storage: 'sequelize',
@@ -17,4 +17,4 @@ const umzug = new Umzug({
 	}
 });
 
-export default umzug;
+module.exports = umzug;

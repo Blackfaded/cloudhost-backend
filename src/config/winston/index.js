@@ -1,7 +1,7 @@
-import appRoot from 'app-root-path';
-import { createLogger, format, transports } from 'winston';
-import Elasticsearch from 'winston-elasticsearch';
-import expressWinston from 'express-winston';
+const appRoot = require('app-root-path');
+const { createLogger, format, transports } = require('winston');
+const Elasticsearch = require('winston-elasticsearch');
+const expressWinston = require('express-winston');
 
 const { combine, timestamp, printf, colorize, json } = format; // eslint-disable-line
 
@@ -78,4 +78,4 @@ const httpLogger = expressWinston.logger({
 	colorize: false
 });
 
-export { appLogger, httpLogger };
+module.exports = { appLogger, httpLogger };

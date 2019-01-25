@@ -1,10 +1,14 @@
-import express from 'express';
+const express = require('express');
+const passport = require('passport');
+const users = require('./users');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-	// const response = await axios.get('https://git.hsrw.eu/api/v4/projects');
 	res.json({ api: 'v1' }).status(200);
 });
 
-export default router;
+router.use(passport.authenticate('jwt', { session: false }));
+router.use('/users', users);
+
+module.exports = router;

@@ -1,8 +1,8 @@
-import axios from 'axios';
-import connections from './connections';
+const axios = require('axios');
+const connections = require('./connections');
 
 const instance = axios.create({
 	baseURL: connections.gitlab.domain
 });
 
-export default instance;
+module.exports = instance;

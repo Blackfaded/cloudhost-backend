@@ -1,4 +1,4 @@
-export default {
+module.exports = {
 	development: {
 		gitlab: {
 			domain: process.env.GITLAB_DOMAIN,

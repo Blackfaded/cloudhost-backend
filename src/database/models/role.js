@@ -1,4 +1,4 @@
-export default (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
 	const Role = sequelize.define('Role', {
 		name: DataTypes.STRING,
 		description: DataTypes.STRING
@@ -7,7 +7,8 @@ export default (sequelize, DataTypes) => {
 	Role.associate = (models) => {
 		models.Role.belongsToMany(models.User, {
 			through: models.UserRole,
-			foreignKey: 'role_id'
+			foreignKey: 'role_id',
+			as: 'users'
 		});
 	};
 

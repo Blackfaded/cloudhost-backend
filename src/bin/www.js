@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import http from 'http';
-import { appLogger } from '@/config/winston';
-import models from '@/database/models';
-import umzug from '@/database/umzug';
+const http = require('http');
 
 const debug = require('debug')('cloudhost:server');
+const models = require('../database/models');
+const umzug = require('../database/umzug');
+const { appLogger } = require('../config/winston');
 const app = require('../app');
 
 /**
@@ -91,4 +91,4 @@ function onListening() {
 	appLogger.info('app started');
 }
 
-export default server;
+module.exports = server;

@@ -21,7 +21,8 @@ module.exports = {
 		'class-methods-use-this': 0,
 		'no-use-before-define': 0,
 		'no-shadow': 0,
-		'no-restricted-globals': 0
+		'no-restricted-globals': 0,
+		'arrow-body-style': 0
 	},
 	settings: {
 		'import/resolver': {
