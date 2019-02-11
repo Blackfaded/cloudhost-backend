@@ -2,11 +2,21 @@ module.exports = (sequelize, DataTypes) => {
 	const User = sequelize.define('User', {
 		email: {
 			type: DataTypes.STRING,
-			primaryKey: true
+			primaryKey: true,
+			allowNull: false
 		},
-		gitlabId: DataTypes.INTEGER,
-		gitlabAccessToken: DataTypes.STRING,
-		username: DataTypes.STRING,
+		gitlabId: {
+			type: DataTypes.INTEGER,
+			allowNull: false
+		},
+		gitlabAccessToken: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		username: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
 		active: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: true
@@ -24,9 +34,7 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: 'user_id',
 			as: 'roles'
 		});
-		models.User.belongsToMany(models.Application, {
-			through: 'UserApplication'
-		});
+		models.User.hasMany(models.Application, { foreignKey: 'user_id' });
 	};
 
 	return User;

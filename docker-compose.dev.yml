@@ -6,7 +6,13 @@ services:
    target: modules
   image: cloudhost/backend_development:latest
   command: npm run dev
+  labels:
+   - 'traefik.enable=true'
+   - 'traefik.backend=cloudhost-backend.localhost'
+   - 'traefik.frontend.rule=Host:cloudhost-backend.localhost'
+   - 'traefik.port=3000'
   volumes:
+   - /var/run/docker.sock:/var/run/docker.sock:ro
    - .:/usr/app/backend/
    - /usr/app/frontend/node_modules
   tty: true

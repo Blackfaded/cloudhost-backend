@@ -5,6 +5,8 @@ services:
   restart: always
   networks:
    - app
+  labels:
+   - 'traefik.enable=false'
   ports:
    - '3306:3306'
   env_file:

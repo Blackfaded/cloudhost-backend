@@ -1,17 +1,27 @@
 module.exports = (sequelize, DataTypes) => {
 	const Application = sequelize.define('Application', {
-		repositoryName: DataTypes.STRING,
-		repositoryId: DataTypes.STRING,
-		repositoryBranch: DataTypes.STRING,
+		repositoryName: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		repositoryId: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		repositoryBranch: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
 		commitHash: DataTypes.STRING,
-		needsMongo: DataTypes.BOOLEAN,
+		needsMongo: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false
+		},
 		autostart: DataTypes.BOOLEAN
 	});
 
 	Application.associate = (models) => {
-		models.Application.belongsToMany(models.User, {
-			through: 'UserApplication'
-		});
+		models.Application.belongsTo(models.User, { foreignKey: 'user_id' });
 	};
 
 	return Application;

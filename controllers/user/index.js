@@ -10,10 +10,6 @@ function findUserByEmail(email) {
 	});
 }
 
-async function findUserByEmailPlain(email) {
-	return (await findUserByEmail(email)).get({ plain: true });
-}
-
 function findAllUsers() {
 	return models.User.findAll({
 		include: [{ model: models.Role, as: 'roles' }]
@@ -32,16 +28,15 @@ async function deleteUserRole(email, role) {
 	return findUserByEmail(email);
 }
 
-async function addUserRole(email, role) {
+async function addUserRole(email, role, grantedBy) {
 	const user = await findUserByEmail(email);
 	const foundRole = await findRoles([role]);
-	await user.addRole(foundRole);
+	await user.addRole(foundRole, { through: { grantedBy_id: grantedBy } });
 	return findUserByEmail(email);
 }
 
 module.exports = {
 	findUserByEmail,
-	findUserByEmailPlain,
 	findAllUsers,
 	updateUserFieldsByEmail,
 	deleteUserRole,

@@ -4,7 +4,6 @@ const axios = require('../config/axios');
 const config = require('../config/connections');
 const createOrUpdateUser = require('../controllers/user/createOrUpdateUser');
 
-console.log(config);
 const router = express.Router();
 
 router.post('/', async (req, res) => {
@@ -26,17 +25,16 @@ router.post('/', async (req, res) => {
 					Authorization: `Bearer ${accessToken}`
 				}
 			});
-			console.log(user);
 			user.accessToken = accessToken;
 
-			const updatedOrCreatedUser = (await createOrUpdateUser(user)).get({ plain: true });
+			const updatedOrCreatedUser = await createOrUpdateUser(user);
 
 			// Find or create user in DB
 			const userToken = {
 				email: updatedOrCreatedUser.email
 			};
 
-			const token = jwt.sign(userToken, 'secret');
+			const token = jwt.sign(userToken, config.jwt.secret);
 			res.json({ token });
 		} catch (error) {
 			res.boom.unauthorized('An error occured while creating or updating the user');

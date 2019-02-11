@@ -1,6 +1,7 @@
 const express = require('express');
+const axios = require('../../../config/axios');
 const {
-	findUserByEmailPlain,
+	findUserByEmail,
 	findAllUsers,
 	updateUserFieldsByEmail,
 	deleteUserRole,
@@ -21,8 +22,7 @@ router.get('/', async (req, res) => {
 
 router.get('/self', async (req, res) => {
 	try {
-		const user = await findUserByEmailPlain(req.user.email);
-		console.log(user);
+		const { user } = req;
 		const modifiedUser = {
 			email: user.email,
 			name: user.username,
@@ -37,7 +37,7 @@ router.get('/self', async (req, res) => {
 
 router.get('/:email', isAdmin, async (req, res) => {
 	try {
-		const user = await findUserByEmailPlain(req.params.email);
+		const user = (await findUserByEmail(req.params.email)).get({ plain: true });
 		res.json(user).status(200);
 	} catch (error) {
 		res.boom.badRequest('An error occured while getting user');
@@ -71,13 +71,38 @@ router.delete('/:email/roles/:rolename', isAdmin, async (req, res) => {
 router.post('/:email/roles', isAdmin, async (req, res) => {
 	const { role } = req.body;
 	const { email } = req.params;
+	const grantedBy = req.user.email;
 	try {
-		const user = (await addUserRole(email, role)).get({
+		const user = (await addUserRole(email, role, grantedBy)).get({
 			plain: true
 		});
 		res.json(user).status(200);
 	} catch (error) {
 		res.boom.badRequest('An error occured while deleting user role');
+	}
+});
+
+router.get('/:email/projects', isAdmin, async (req, res) => {
+	try {
+		const user = (await findUserByEmail(req.params.email)).get({ plain: true });
+		console.log(user);
+		const { data: projects } = await axios.get(`api/v4/users/${user.gitlabId}/projects`, {
+			headers: {
+				Authorization: `Bearer ${user.gitlabAccessToken}`
+			}
+		});
+		console.log(projects);
+		const resProjects = projects.map((project) => {
+			return {
+				id: project.id,
+				path: project.path,
+				path_with_namespace: project.path_with_namespace
+			};
+		});
+		res.json(resProjects).status(200);
+	} catch (error) {
+		console.log(error);
+		res.boom.badRequest('An error occured while getting user');
 	}
 });
 

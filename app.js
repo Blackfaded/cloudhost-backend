@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const cors = require('cors');
 const boom = require('express-boom');
+
 const configPassport = require('./config/passport');
 
 const { httpLogger } = require('./config/winston');

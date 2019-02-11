@@ -1,7 +1,8 @@
 const passport = require('passport');
 const { Strategy: JwtStrategy } = require('passport-jwt');
 const config = require('../config/connections');
-const { findUserByEmailPlain } = require('../controllers/user');
+
+const { findUserByEmail } = require('../controllers/user');
 
 module.exports = (app) => {
 	app.use(passport.initialize());
@@ -21,8 +22,7 @@ module.exports = (app) => {
 		// eslint-disable-next-line
 		new JwtStrategy(opts, async (jwt_payload, done) => {
 			try {
-				console.log(jwt_payload);
-				const user = await findUserByEmailPlain(jwt_payload.email);
+				const user = (await findUserByEmail(jwt_payload.email)).get({ plain: true });
 				return done(null, user);
 			} catch (error) {
 				return done(null, false);
