@@ -8,8 +8,9 @@ services:
   command: npm run dev
   labels:
    - 'traefik.enable=true'
-   - 'traefik.backend=cloudhost-backend.localhost'
-   - 'traefik.frontend.rule=Host:cloudhost-backend.localhost'
+   - 'traefik.backend=cloudhost-API'
+   - 'traefik.docker.network=traefik'
+   - 'traefik.frontend.rule=Host:api.localhost'
    - 'traefik.port=3000'
   volumes:
    - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -22,7 +23,11 @@ services:
    - app
    - users
    - elk_elk
+   - traefik
   depends_on:
    - mysql
-  ports:
-   - '3000:3000'
+
+
+networks:
+  traefik:
+    external: true
