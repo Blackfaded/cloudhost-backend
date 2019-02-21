@@ -13,7 +13,8 @@ function dockerfile(archive, runScript) {
   EXPOSE 8080
   LABEL traefik.enable=true
   LABEL traefik.backend="testapp"
-  LABEL traefik.frontend.rule="Host:testapp.localhost"
+  LABEL traefik.network="traefik"
+  LABEL traefik.frontend.rule="Host:cloudhost.localhost;PathPrefixStrip:/rene.heinen/testapp"
   LABEL traefik.port="8080"
   CMD ["npm", "run", "${runScript}"]`;
 }
