@@ -5,19 +5,21 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false
 		},
 		repositoryId: {
-			type: DataTypes.STRING,
+			type: DataTypes.INTEGER,
 			allowNull: false
 		},
 		repositoryBranch: {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
-		commitHash: DataTypes.STRING,
 		needsMongo: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
 		},
-		autostart: DataTypes.BOOLEAN
+		autostart: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: true
+		}
 	});
 
 	Application.associate = (models) => {

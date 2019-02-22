@@ -11,15 +11,6 @@ const { isAdmin } = require('../../../middlewares/roles');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-	try {
-		const users = await findAllUsers();
-		res.json(users).status(200);
-	} catch (error) {
-		res.boom.badRequest('An error occured while getting users');
-	}
-});
-
 router.get('/self', async (req, res) => {
 	try {
 		const { user } = req;
@@ -32,6 +23,15 @@ router.get('/self', async (req, res) => {
 		res.json(modifiedUser).status(200);
 	} catch (error) {
 		res.boom.badRequest('An error occured while getting user');
+	}
+});
+
+router.get('/', isAdmin, async (req, res) => {
+	try {
+		const users = await findAllUsers();
+		res.json(users).status(200);
+	} catch (error) {
+		res.boom.badRequest('An error occured while getting users');
 	}
 });
 
@@ -57,14 +57,19 @@ router.patch('/:email', isAdmin, async (req, res) => {
 });
 
 router.delete('/:email/roles/:rolename', isAdmin, async (req, res) => {
-	try {
-		const user = (await deleteUserRole(req.params.email, req.params.rolename)).get({
-			plain: true
-		});
+	const { email, rolename } = req.params;
+	if (req.user.email === email) {
+		res.boom.forbidden("You can't remove your own role");
+	} else {
+		try {
+			const user = (await deleteUserRole(email, rolename)).get({
+				plain: true
+			});
 
-		res.json(user).status(200);
-	} catch (error) {
-		res.boom.badRequest('An error occured while deleting user role');
+			res.json(user).status(200);
+		} catch (error) {
+			res.boom.badRequest('An error occured while deleting user role');
+		}
 	}
 });
 
@@ -72,6 +77,7 @@ router.post('/:email/roles', isAdmin, async (req, res) => {
 	const { role } = req.body;
 	const { email } = req.params;
 	const grantedBy = req.user.email;
+
 	try {
 		const user = (await addUserRole(email, role, grantedBy)).get({
 			plain: true
@@ -82,7 +88,7 @@ router.post('/:email/roles', isAdmin, async (req, res) => {
 	}
 });
 
-router.get('/:email/projects', isAdmin, async (req, res) => {
+router.get('/:email/projects', async (req, res) => {
 	try {
 		const user = (await findUserByEmail(req.params.email)).get({ plain: true });
 		console.log(user);

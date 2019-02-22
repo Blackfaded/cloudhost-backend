@@ -7,6 +7,7 @@ const models = require('../database/models');
 const umzug = require('../database/umzug');
 const { appLogger } = require('../config/winston');
 const app = require('../app');
+const io = require('../controllers/websocket');
 
 /**
  * Get port from environment and store in Express.
@@ -20,7 +21,7 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
-
+io.listen(server);
 /**
  * Listen on provided port, on all network interfaces.
  */

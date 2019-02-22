@@ -42,6 +42,7 @@
 		"passport": "^0.4.0",
 		"passport-jwt": "^4.0.0",
 		"sequelize": "^4.42.0",
+		"socket.io": "^2.2.0",
 		"tmp-promise": "^1.0.5",
 		"umzug": "^2.2.0",
 		"winston": "^3.1.0",

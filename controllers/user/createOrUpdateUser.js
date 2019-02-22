@@ -14,9 +14,7 @@ module.exports = async (user) => {
 	};
 
 	const rolesToAssign = ['user'];
-	if (user.is_admin) {
-		rolesToAssign.push('admin');
-	}
+
 
 	try {
 		// Try to find a user
@@ -32,9 +30,9 @@ module.exports = async (user) => {
 
 		// find roles to assign to user
 		const roles = await findRoles(rolesToAssign);
-
+		console.log({ roles });
 		// set user roles
-		await foundUser.setRoles(roles);
+		await foundUser.addRoles(roles);
 
 		// return updated user
 		return findUserByEmail(user.email);

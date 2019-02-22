@@ -1,84 +1,39 @@
 const express = require('express');
-const fs = require('fs');
-const { promises: fsp } = require('fs');
-const path = require('path');
-const tmp = require('tmp-promise');
-const axios = require('../../../config/axios');
-const { docker, dockerfile } = require('../../../config/docker');
+
+const downloader = require('../../../controllers/downloads/gitlab');
+const imageController = require('../../../controllers/docker/images');
+const containerController = require('../../../controllers/docker/container');
+const dockerfileController = require('../../../controllers/docker/dockerfile');
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
 	try {
-		const { repositoryId, branchName, runScript } = req.body;
-		console.log({ repositoryId, branchName });
-
-		const { path: tempPath } = await tmp.dir({
-			template: path.join(__dirname, '../../../tmp/tmp-XXXXXX'),
-			unsafeCleanup: true
-		});
+		const { repositoryId, branchName, runScript, mountPath, repositoryName } = req.body;
+		const { email } = req.user;
+		const userName = email.split('@')[0];
+		console.log({ repositoryId, branchName, runScript, mountPath, userName });
 
 		const archive = 'archive.tar.gz';
 
-		const output = fs.createWriteStream(path.join(tempPath, archive));
+		const dir = await downloader.getRepositoryArchive(req.user, repositoryId, branchName, archive);
 
-		const { data: stream } = await axios.get(
-			`api/v4/projects/${repositoryId}/repository/archive?sha=${branchName}`,
-			{
-				headers: {
-					Authorization: `Bearer ${req.user.gitlabAccessToken}`
-				},
-				responseType: 'stream'
-			}
-		);
-		const downloadSize = stream._readableState.length; // eslint-disable-line
+		await dockerfileController.createDockerfile(dir, archive, runScript, userName, mountPath);
 
-		let downloaded = 0;
+		const imageName = `${userName}-${mountPath}`;
 
-		await new Promise((resolve, reject) => {
-			stream.on('data', (chunk /* arraybuffer */) => {
-				downloaded += chunk.length;
-
-				output.write(Buffer.from(chunk));
-			});
-			stream.on('end', () => resolve());
-			stream.on('error', () => reject());
+		await imageController.buildImage(req.user, {
+			imageName,
+			path: dir,
+			archive,
+			repositoryName,
+			repositoryId,
+			repositoryBranch: branchName
 		});
 
-		console.log({ downloaded });
-		output.end();
+		await containerController.removeContainer(imageName);
 
-		await fsp.writeFile(path.join(tempPath, 'Dockerfile'), dockerfile(archive, runScript), 'utf-8');
-
-		const image = await docker.buildImage(
-			{
-				context: tempPath,
-				src: ['Dockerfile', archive]
-			},
-			{ t: 'node_test' }
-		);
-
-		await new Promise((resolve, reject) => {
-			image.pipe(
-				process.stdout,
-				{
-					end: true
-				}
-			);
-			docker.modem.followProgress(image, (err, res) => (err ? reject(err) : resolve(res)));
-		});
-
-		const createContainerOpts = {
-			Image: 'node_test',
-			ExposedPorts: {
-				'8080/tcp': {}
-			},
-			Hostconfig: {
-				NetworkMode: 'traefik'
-			}
-		};
-		const container = await docker.createContainer(createContainerOpts);
-		await container.start();
+		await containerController.startContainer(imageName);
 		res.send().status(200);
 	} catch (error) {
 		console.log(error);

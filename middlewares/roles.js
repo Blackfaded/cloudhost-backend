@@ -5,7 +5,7 @@ async function isAdmin(req, res, next) {
 	) {
 		next();
 	} else {
-		res.boom.forbidden('Ho dont have the required role');
+		res.boom.forbidden("You don't have the required role");
 	}
 }
 

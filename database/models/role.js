@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
 		name: {
 			type: DataTypes.STRING,
 			primaryKey: true,
-			allowNull: false,
+			allowNull: false
 		},
 		description: DataTypes.STRING
 	});
@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
 		models.Role.belongsToMany(models.User, {
 			through: models.UserRole,
 			foreignKey: 'role_id',
-			as: 'users'
+			as: 'users',
+			primaryKey: true
 		});
 	};
 

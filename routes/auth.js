@@ -33,10 +33,12 @@ router.post('/', async (req, res) => {
 			const userToken = {
 				email: updatedOrCreatedUser.email
 			};
-
+			console.log('ok');
 			const token = jwt.sign(userToken, config.jwt.secret);
+
 			res.json({ token });
 		} catch (error) {
+			console.log(error);
 			res.boom.unauthorized('An error occured while creating or updating the user');
 		}
 	} catch (e) {
