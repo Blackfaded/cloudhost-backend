@@ -1,5 +1,22 @@
 module.exports = (sequelize, DataTypes) => {
 	const Application = sequelize.define('Application', {
+		mountPath: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			primaryKey: true
+		},
+		containerName: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		imageName: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		appName: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
 		repositoryName: {
 			type: DataTypes.STRING,
 			allowNull: false

@@ -1,7 +1,6 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const passport = require('passport');
 const cors = require('cors');
 const boom = require('express-boom');
 
@@ -31,20 +30,5 @@ app.use(
 );
 app.use(cookieParser());
 app.use('/', routes);
-
-// temp test route
-app.get(
-	'/protected',
-	async (req, res, next) => {
-		next();
-	},
-	passport.authenticate('jwt', { session: false }),
-	(req, res) => {
-		// Save the timesheet to the database...
-		console.log('req.user', req.user);
-		// send the response
-		res.status(201).send('Hi from Backend');
-	}
-);
 
 module.exports = app;

@@ -91,13 +91,11 @@ router.post('/:email/roles', isAdmin, async (req, res) => {
 router.get('/:email/projects', async (req, res) => {
 	try {
 		const user = (await findUserByEmail(req.params.email)).get({ plain: true });
-		console.log(user);
 		const { data: projects } = await axios.get(`api/v4/users/${user.gitlabId}/projects`, {
 			headers: {
 				Authorization: `Bearer ${user.gitlabAccessToken}`
 			}
 		});
-		console.log(projects);
 		const resProjects = projects.map((project) => {
 			return {
 				id: project.id,

@@ -2,7 +2,8 @@ const { promises: fsp } = require('fs');
 const path = require('path');
 
 class DockerfileController {
-	populateDockerfile(archive, runScript, userName, mountPath) {
+	populateDockerfile(options) {
+		const { archive, runScript, mountPath } = options;
 		return `\
     FROM node:carbon-alpine
     WORKDIR /app
@@ -14,18 +15,19 @@ class DockerfileController {
     LABEL traefik.enable=true
     LABEL traefik.backend="testapp"
     LABEL traefik.network="traefik"
-    LABEL traefik.frontend.rule="Host:cloudhost.localhost;PathPrefixStrip:/${userName}/${mountPath}"
+    LABEL traefik.frontend.rule="Host:cloudhost.localhost;PathPrefixStrip:/${mountPath}"
     LABEL traefik.port="8080"
     CMD ["npm", "run", "${runScript}"]`;
 	}
 
 	async writeDockerfile(dir, content) {
-		await fsp.writeFile(path.join(dir, 'Dockerfile'), content, 'utf-8');
+		return fsp.writeFile(path.join(dir, 'Dockerfile'), content, 'utf-8');
 	}
 
-	async createDockerfile(dir, archive, runScript, userName, mountPath) {
-		const content = await this.populateDockerfile(archive, runScript, userName, mountPath);
-		await this.writeDockerfile(dir, content);
+	async createDockerfile(options) {
+		const { dir, archive, runScript, mountPath } = options; // eslint-disable-line
+		const content = this.populateDockerfile({ archive, runScript, mountPath });
+		return this.writeDockerfile(dir, content);
 	}
 }
 

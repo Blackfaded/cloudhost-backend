@@ -22,7 +22,8 @@ module.exports = {
 		'no-use-before-define': 0,
 		'no-shadow': 0,
 		'no-restricted-globals': 0,
-		'arrow-body-style': 0
+		'arrow-body-style': 0,
+		'max-len': ['error', { code: 120 }]
 	},
 	settings: {
 		'import/resolver': {

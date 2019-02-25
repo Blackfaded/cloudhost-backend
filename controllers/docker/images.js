@@ -1,10 +1,10 @@
 const docker = require('./index');
 const io = require('../websocket');
-const application = require('../../controllers/application');
 
 class ImageController {
-	async buildImage(user, options) {
-		const { path, archive, imageName, repositoryId, repositoryBranch, repositoryName } = options;
+	async buildImage(options) {
+		const { path, archive, imageName } = options;
+		io.of('/test').emit('startBuildImage');
 		const image = await docker.buildImage(
 			{
 				context: path,
@@ -16,18 +16,25 @@ class ImageController {
 			const output = JSON.parse(chunk.toString()).stream;
 			console.log(output);
 
-			io.of('/test').emit('buildProgress', { message: output });
+			// io.of('/test').emit('buildProgress', { message: output });
 		});
 
 		await new Promise((resolve, reject) => {
 			docker.modem.followProgress(image, (err, res) => (err ? reject(err) : resolve(res)));
 		});
+		io.of('/test').emit('finishBuildImage');
+	}
 
-		// TODO: remove old application
-		await application.createApplication(user, {
-			repositoryId,
-			repositoryBranch,
-			repositoryName
+	async getImage(imageName) {
+		return new Promise(async (resolve, reject) => {
+			const stream = await docker.pull(imageName);
+
+			stream.on('data', (chunk /* arraybuffer */) => {
+				console.log(chunk.toString());
+			});
+
+			stream.on('end', () => resolve());
+			stream.on('error', () => reject());
 		});
 	}
 }
