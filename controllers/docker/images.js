@@ -2,6 +2,16 @@ const docker = require('./index');
 const io = require('../websocket');
 
 class ImageController {
+	getImageName(user, { repositoryName, branchName, runScript }) {
+		const { userName } = user;
+		return `${userName}_repository-${repositoryName}_branch-${branchName}_runscript-${runScript}`;
+	}
+
+	getMountPath(user, { appName }) {
+		const { userName } = user;
+		return `${userName}/${appName}`;
+	}
+
 	async buildImage(options) {
 		const { path, archive, imageName } = options;
 		io.of('/test').emit('startBuildImage');

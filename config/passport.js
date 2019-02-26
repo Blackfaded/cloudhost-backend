@@ -23,6 +23,7 @@ module.exports = (app) => {
 		new JwtStrategy(opts, async (jwt_payload, done) => {
 			try {
 				const user = (await findUserByEmail(jwt_payload.email)).get({ plain: true });
+				user.userName = user.email.split('@')[0]; // eslint-disable-line
 				return done(null, user);
 			} catch (error) {
 				return done(null, false);

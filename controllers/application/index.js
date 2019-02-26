@@ -1,11 +1,19 @@
 const { findUserByEmail } = require('../user');
 const models = require('../../database/models');
+const imagesController = require('../docker/images');
 
 class ApplicationController {
-	async createApplication(user, applicationValues) {
+	async createApplication(user, { appName, repositoryId, repositoryBranch, repositoryName }) {
+		const mountPath = imagesController.getMountPath(user, { appName });
 		const foundUser = await findUserByEmail(user.email);
 		try {
-			const app = await models.Application.create(applicationValues);
+			const app = await models.Application.create({
+				mountPath,
+				appName,
+				repositoryId,
+				repositoryBranch,
+				repositoryName
+			});
 			await foundUser.addApplication(app);
 			return app;
 		} catch (error) {
@@ -18,12 +26,18 @@ class ApplicationController {
 		return models.Application.findAll();
 	}
 
-	findByImageName(imageName) {
+	findAllByUser(user) {
+		const { email } = user;
 		return models.Application.findAll({
 			where: {
-				imageName
+				user_id: email
 			}
 		});
+	}
+
+	update(user, values) {
+		const { email } = user;
+		return models.Application.update(values, { returning: true, where: { user_id: email } });
 	}
 
 	async findByAppName(user, appName) {
@@ -36,18 +50,19 @@ class ApplicationController {
 		});
 	}
 
-	async destroyByMountPath(user, mountPath) {
+	async destroyByAppName(user, appName) {
 		const { email } = user;
 		const foundUser = await findUserByEmail(email);
 		const foundApps = await foundUser.getApplications({
 			where: {
-				mountPath
+				appName
 			}
 		});
 		if (foundApps.length) {
-			foundApps.forEach(async (app) => {
+			await foundApps.reduce(async (promise, app) => {
+				await promise;
 				await app.destroy();
-			});
+			}, Promise.resolve());
 		}
 	}
 }

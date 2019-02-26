@@ -5,14 +5,6 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			primaryKey: true
 		},
-		containerName: {
-			type: DataTypes.STRING,
-			allowNull: false
-		},
-		imageName: {
-			type: DataTypes.STRING,
-			allowNull: false
-		},
 		appName: {
 			type: DataTypes.STRING,
 			allowNull: false
