@@ -9,7 +9,7 @@ class DockerfileController {
     FROM node:carbon-alpine
     WORKDIR /app
     ADD ${archive} .
-    RUN cp -r */*  .
+    RUN cp -r */. .
     RUN npm install
     ENV PORT=8080
     EXPOSE 8080

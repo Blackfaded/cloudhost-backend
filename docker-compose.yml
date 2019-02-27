@@ -21,5 +21,3 @@ networks:
   driver: bridge
  users:
   driver: bridge
- elk_elk:
-  external: true

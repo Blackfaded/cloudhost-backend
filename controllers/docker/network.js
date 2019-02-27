@@ -6,6 +6,7 @@ class NetworkController {
 	async createNetwork(network) {
 		try {
 			const foundNetwork = await docker.getNetwork(network);
+			await foundNetwork.inspect();
 			appLogger.info(`network ${network} already exists. Skipping creation.`);
 			return foundNetwork;
 		} catch (error) {
