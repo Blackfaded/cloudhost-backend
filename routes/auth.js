@@ -46,4 +46,20 @@ router.post('/', async (req, res) => {
 	}
 });
 
+router.get('/mongoexpress', (req, res) => {
+	try {
+		const decoded = jwt.verify(req.cookies.jwt, config.jwt.secret);
+		const user = decoded.email.split('@')[0];
+		console.log(req.headers);
+		const accessedUser = req.headers['x-forwarded-uri'].split('/')[2];
+		if (user === accessedUser) {
+			console.log('user matches');
+			return res.status(200).send();
+		}
+		return res.boom.unauthorized();
+	} catch (error) {
+		return res.boom.unauthorized();
+	}
+});
+
 module.exports = router;

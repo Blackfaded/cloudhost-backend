@@ -22,8 +22,16 @@ class ApplicationController {
 		}
 	}
 
-	findAll() {
-		return models.Application.findAll();
+	findAll(options = {}) {
+		return models.Application.findAll(options);
+	}
+
+	findAllRunningContainers() {
+		return this.findAll({
+			where: {
+				autostart: true
+			}
+		});
 	}
 
 	findAllByUser(user) {
@@ -35,9 +43,9 @@ class ApplicationController {
 		});
 	}
 
-	update(user, values) {
+	update(user, appName, values) {
 		const { email } = user;
-		return models.Application.update(values, { returning: true, where: { user_id: email } });
+		return models.Application.update(values, { returning: true, where: { user_id: email, appName } });
 	}
 
 	async findByAppName(user, appName) {

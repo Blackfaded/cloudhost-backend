@@ -13,10 +13,10 @@ router.get('/:id/branches', async (req, res) => {
 				}
 			}
 		);
-		res.json(branches).status(200);
+		return res.json(branches).status(200);
 	} catch (error) {
 		console.log(error);
-		res.boom.badRequest('An error occured while getting the branch');
+		return res.boom.badRequest('An error occured while getting the branch');
 	}
 });
 
@@ -31,10 +31,10 @@ router.get('/:id/branches/:branchId/runScripts', async (req, res) => {
 			}
 		);
 		const runScripts = Object.keys(data.scripts);
-		res.json(runScripts).status(200);
+		return res.json(runScripts).status(200);
 	} catch (error) {
 		console.log(error);
-		res.boom.badRequest('An error occured while getting the branch');
+		return res.boom.badRequest('An error occured while getting the branch');
 	}
 });
 

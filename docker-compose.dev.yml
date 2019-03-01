@@ -21,7 +21,6 @@ services:
    - .env.development
   networks:
    - app
-   - users
    - traefik
   depends_on:
    - mysql

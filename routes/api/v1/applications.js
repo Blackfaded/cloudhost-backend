@@ -14,10 +14,10 @@ router.get('/', async (req, res) => {
 	try {
 		console.log(req.user);
 		const applications = await applicationController.findAllByUser(req.user);
-		res.json(applications.map((app) => app.get({ plain: true })));
+		return res.json(applications.map((app) => app.get({ plain: true })));
 	} catch (error) {
 		console.log({ error });
-		res.json([]);
+		return res.json([]);
 	}
 });
 
@@ -26,19 +26,30 @@ router.get('/:appName', async (req, res) => {
 		const { appName } = req.params;
 		const { user } = req;
 		const application = await applicationController.findByAppName(user, appName);
-		res.json(application[0]);
+		return res.json(application[0]);
 	} catch (error) {
 		console.log({ error });
-		res.json([]);
+		return res.json([]);
 	}
 });
 
 router.post('/', async (req, res) => {
 	try {
-		const { repositoryId, branchName, runScript, appName, repositoryName, needsMongo } = req.body; // eslint-disable-line
+		const {
+			repositoryId,
+			branchName,
+			runScript,
+			appName,
+			repositoryName,
+			needsMongo,
+			buildScript
+		} = req.body; // eslint-disable-line
 
+		if (appName.length >= 30) {
+			return res.boom.badRequest("appName can't be longer than 20 characters");
+		}
 		const archive = 'archive.tar.gz';
-
+		console.log({ buildScript });
 		const path = await downloader.getRepositoryArchive(req.user, {
 			repositoryId,
 			branchName,
@@ -49,7 +60,8 @@ router.post('/', async (req, res) => {
 			dir: path,
 			archive,
 			runScript,
-			appName
+			appName,
+			buildScript
 		});
 
 		const imageName = imageController.getImageName(req.user, {
@@ -67,16 +79,29 @@ router.post('/', async (req, res) => {
 		io.of('/test').emit('beginStartApplication');
 		await applicationController.destroyByAppName(req.user, appName);
 
-		const mongoContainerName = containerController.getContainerName(req.user, { appName: 'mongoDB' });
 		if (needsMongo) {
-			const mongoContainer = await containerController.createMongoContainer(mongoContainerName);
+			const mongoAppName = 'mongoDB';
+			await containerController.createMongoContainer(req.user, {
+				appName: mongoAppName
+			});
 
-			await networkController.attachContainerToNetworks({
-				containerName: mongoContainerName,
+			const mongoExpressAppName = 'mongoExpress';
+			await containerController.createMongoExpressContainer(req.user, {
+				appName: mongoExpressAppName
+			});
+
+			await networkController.attachContainerToNetworks(req.user, {
+				appName: mongoAppName,
 				networkNames: ['cloudhost_users']
 			});
-			await containerController.startContainer(req.user, { appName: 'mongoDB' });
-			console.log(await mongoContainer.inspect());
+
+			await networkController.attachContainerToNetworks(req.user, {
+				appName: mongoExpressAppName,
+				networkNames: ['traefik', 'cloudhost_users']
+			});
+
+			await containerController.startContainer(req.user, { appName: mongoAppName });
+			await containerController.startContainer(req.user, { appName: mongoExpressAppName });
 		}
 
 		const newApplication = await applicationController.createApplication(req.user, {
@@ -99,10 +124,10 @@ router.post('/', async (req, res) => {
 
 		io.of('/test').emit('finishStartApplication');
 
-		res.json(newApplication.get({ plain: true }));
+		return res.json(newApplication.get({ plain: true }));
 	} catch (error) {
 		console.log({ error });
-		res.boom.badRequest('An error occured while creating the application');
+		return res.boom.badRequest('An error occured while creating the application');
 	}
 });
 
@@ -110,10 +135,10 @@ router.post('/:appName/stop', async (req, res) => {
 	try {
 		const { appName } = req.params;
 		await containerController.stopContainer(req.user, { appName });
-		res.status(200).send();
+		return res.status(200).send();
 	} catch (error) {
 		console.log({ error });
-		res.boom.badImplementation('Container already stopped.');
+		return res.boom.badImplementation('Container already stopped.');
 	}
 });
 
@@ -121,10 +146,10 @@ router.post('/:appName/start', async (req, res) => {
 	try {
 		const { appName } = req.params;
 		await containerController.startContainer(req.user, { appName });
-		res.status(200).send();
+		return res.status(200).send();
 	} catch (error) {
 		console.log({ error });
-		res.boom.badImplementation('Container already stopped.');
+		return res.boom.badImplementation('Container already stopped.');
 	}
 });
 

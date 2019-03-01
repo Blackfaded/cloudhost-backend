@@ -1,12 +1,8 @@
 const express = require('express');
 const axios = require('../../../config/axios');
-const {
-	findUserByEmail,
-	findAllUsers,
-	updateUserFieldsByEmail,
-	deleteUserRole,
-	addUserRole
-} = require('../../../controllers/user');
+const userController = require('../../../controllers/user');
+
+
 const { isAdmin } = require('../../../middlewares/roles');
 
 const router = express.Router();
@@ -17,6 +13,7 @@ router.get('/self', async (req, res) => {
 		const modifiedUser = {
 			email: user.email,
 			name: user.username,
+			userName: userController.getUserName(user),
 			roles: user.roles.map((role) => role.name),
 			profilePictureUrl: user.profilePictureUrl
 		};
@@ -28,7 +25,7 @@ router.get('/self', async (req, res) => {
 
 router.get('/', isAdmin, async (req, res) => {
 	try {
-		const users = await findAllUsers();
+		const users = await userController.findAllUsers();
 		res.json(users).status(200);
 	} catch (error) {
 		res.boom.badRequest('An error occured while getting users');
@@ -37,7 +34,7 @@ router.get('/', isAdmin, async (req, res) => {
 
 router.get('/:email', isAdmin, async (req, res) => {
 	try {
-		const user = (await findUserByEmail(req.params.email)).get({ plain: true });
+		const user = (await userController.findUserByEmail(req.params.email)).get({ plain: true });
 		res.json(user).status(200);
 	} catch (error) {
 		res.boom.badRequest('An error occured while getting user');
@@ -46,7 +43,7 @@ router.get('/:email', isAdmin, async (req, res) => {
 
 router.patch('/:email', isAdmin, async (req, res) => {
 	try {
-		const user = (await updateUserFieldsByEmail(req.params.email, {
+		const user = (await userController.updateUserFieldsByEmail(req.params.email, {
 			...req.body
 		})).get({ plain: true });
 
@@ -62,7 +59,7 @@ router.delete('/:email/roles/:rolename', isAdmin, async (req, res) => {
 		res.boom.forbidden("You can't remove your own role");
 	} else {
 		try {
-			const user = (await deleteUserRole(email, rolename)).get({
+			const user = (await userController.deleteUserRole(email, rolename)).get({
 				plain: true
 			});
 
@@ -79,7 +76,7 @@ router.post('/:email/roles', isAdmin, async (req, res) => {
 	const grantedBy = req.user.email;
 
 	try {
-		const user = (await addUserRole(email, role, grantedBy)).get({
+		const user = (await userController.addUserRole(email, role, grantedBy)).get({
 			plain: true
 		});
 		res.json(user).status(200);
@@ -90,7 +87,7 @@ router.post('/:email/roles', isAdmin, async (req, res) => {
 
 router.get('/:email/projects', async (req, res) => {
 	try {
-		const user = (await findUserByEmail(req.params.email)).get({ plain: true });
+		const user = (await userController.findUserByEmail(req.params.email)).get({ plain: true });
 		const { data: projects } = await axios.get(`api/v4/users/${user.gitlabId}/projects`, {
 			headers: {
 				Authorization: `Bearer ${user.gitlabAccessToken}`

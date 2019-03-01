@@ -19,5 +19,3 @@ services:
 networks:
  app:
   driver: bridge
- users:
-  driver: bridge

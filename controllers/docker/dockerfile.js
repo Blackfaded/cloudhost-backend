@@ -4,13 +4,16 @@ const imageController = require('./images');
 
 class DockerfileController {
 	populateDockerfile(options) {
-		const { archive, runScript, mountPath } = options;
+		const { archive, runScript, mountPath, buildScript } = options;
+		const buildScriptString = buildScript ? `RUN npm run ${buildScript}` : '';
+		console.log({ buildScriptString });
 		return `\
     FROM node:carbon-alpine
     WORKDIR /app
     ADD ${archive} .
     RUN cp -r */. .
     RUN npm install
+    ${buildScriptString}
     ENV PORT=8080
     EXPOSE 8080
     LABEL traefik.enable=true
@@ -25,9 +28,9 @@ class DockerfileController {
 		return fsp.writeFile(path.join(dir, 'Dockerfile'), content, 'utf-8');
 	}
 
-	async createDockerfile(user, { dir, archive, runScript, appName }) {
+	async createDockerfile(user, { dir, archive, runScript, appName, buildScript }) {
 		const mountPath = imageController.getMountPath(user, { appName });
-		const content = this.populateDockerfile({ archive, runScript, mountPath });
+		const content = this.populateDockerfile({ archive, runScript, mountPath, buildScript });
 		return this.writeDockerfile(dir, content);
 	}
 }

@@ -1,7 +1,7 @@
 const moment = require('moment');
 const models = require('../../database/models');
-const { findUserByEmail } = require('./index');
-const { findRoles } = require('../roles');
+const userController = require('./index');
+const roleController = require('../roles');
 
 module.exports = async (user) => {
 	const uservalues = {
@@ -18,7 +18,7 @@ module.exports = async (user) => {
 
 	try {
 		// Try to find a user
-		let foundUser = await findUserByEmail(user.email);
+		let foundUser = await userController.findUserByEmail(user.email);
 
 		// if no user found create one
 		if (!foundUser) {
@@ -29,13 +29,13 @@ module.exports = async (user) => {
 		}
 
 		// find roles to assign to user
-		const roles = await findRoles(rolesToAssign);
+		const roles = await roleController.findRoles(rolesToAssign);
 		console.log({ roles });
 		// set user roles
 		await foundUser.addRoles(roles);
 
 		// return updated user
-		return findUserByEmail(user.email);
+		return userController.findUserByEmail(user.email);
 	} catch (e) {
 		throw e;
 	}

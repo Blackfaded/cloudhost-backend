@@ -34,7 +34,8 @@ models.sequelize.sync().then(async () => {
 	 */
 	umzug.up();
 
-	await imageController.getImage('mvertes/alpine-mongo:latest');
+	await imageController.getImage('mvertes/alpine-mongo:4.0.5-0');
+	await imageController.getImage('mongo-express:0.49');
 	await networkController.createNetwork('cloudhost_users');
 
 	await containerController.startAllRunningContainers();
