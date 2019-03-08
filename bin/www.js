@@ -8,9 +8,8 @@ const umzug = require('../database/umzug');
 const { appLogger } = require('../config/winston');
 const app = require('../app');
 const io = require('../controllers/websocket');
-const containerController = require('../controllers/docker/container');
-const networkController = require('../controllers/docker/network');
-const imageController = require('../controllers/docker/images');
+const initializer = require('../controllers/initialize');
+
 /**
  * Get port from environment and store in Express.
  */
@@ -33,12 +32,8 @@ models.sequelize.sync().then(async () => {
 	 * Listen on provided port, on all network interfaces.
 	 */
 	umzug.up();
+	await initializer.init();
 
-	await imageController.getImage('mvertes/alpine-mongo:4.0.5-0');
-	await imageController.getImage('mongo-express:0.49');
-	await networkController.createNetwork('cloudhost_users');
-
-	await containerController.startAllRunningContainers();
 	server.listen(port);
 	server.on('error', onError);
 	server.on('listening', onListening);

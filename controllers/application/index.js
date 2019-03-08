@@ -3,6 +3,7 @@ const models = require('../../database/models');
 const imagesController = require('../docker/images');
 
 class ApplicationController {
+	// eslint-disable-next-line
 	async createApplication(user, { appName, repositoryId, repositoryBranch, repositoryName }) {
 		const mountPath = imagesController.getMountPath(user, { appName });
 		const foundUser = await findUserByEmail(user.email);
@@ -29,7 +30,7 @@ class ApplicationController {
 	findAllRunningContainers() {
 		return this.findAll({
 			where: {
-				autostart: true
+				running: true
 			}
 		});
 	}

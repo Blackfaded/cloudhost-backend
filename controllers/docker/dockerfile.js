@@ -4,7 +4,7 @@ const imageController = require('./images');
 
 class DockerfileController {
 	populateDockerfile(options) {
-		const { archive, runScript, mountPath, buildScript } = options;
+		const { archive, runScript, mountPath, buildScript } = options; // eslint-disable-line
 		const buildScriptString = buildScript ? `RUN npm run ${buildScript}` : '';
 		console.log({ buildScriptString });
 		return `\
@@ -19,7 +19,7 @@ class DockerfileController {
     LABEL traefik.enable=true
     LABEL traefik.backend="${mountPath}"
     LABEL traefik.docker.network="traefik"
-    LABEL traefik.frontend.rule="Host:cloudhost.localhost;PathPrefixStrip:/${mountPath}"
+    LABEL traefik.frontend.rule="Host:cloudhost;PathPrefixStrip:/${mountPath}"
     LABEL traefik.port="8080"
     CMD ["npm", "run", "${runScript}"]`;
 	}
@@ -28,8 +28,10 @@ class DockerfileController {
 		return fsp.writeFile(path.join(dir, 'Dockerfile'), content, 'utf-8');
 	}
 
+	// eslint-disable-next-line
 	async createDockerfile(user, { dir, archive, runScript, appName, buildScript }) {
 		const mountPath = imageController.getMountPath(user, { appName });
+		// eslint-disable-next-line
 		const content = this.populateDockerfile({ archive, runScript, mountPath, buildScript });
 		return this.writeDockerfile(dir, content);
 	}

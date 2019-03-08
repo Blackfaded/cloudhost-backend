@@ -6,6 +6,10 @@ class UserController {
 		return user.email.split('@')[0];
 	}
 
+	findUser(user) {
+		return this.findUserByEmail(user.email);
+	}
+
 	findUserByEmail(email) {
 		return models.User.findOne({
 			where: {
@@ -18,6 +22,19 @@ class UserController {
 	findAllUsers() {
 		return models.User.findAll({
 			include: [{ model: models.Role, as: 'roles' }]
+		});
+	}
+
+	findAllMongoContainers() {
+		return models.User.findAll({
+			where: {
+				mongoContainerId: {
+					[models.Sequelize.Op.ne]: null
+				},
+				mongoExpressContainerId: {
+					[models.Sequelize.Op.ne]: null
+				}
+			}
 		});
 	}
 

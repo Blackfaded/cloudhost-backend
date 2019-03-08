@@ -1,42 +1,43 @@
 const docker = require('./index');
 const { appLogger } = require('../../config/winston');
 const applicationController = require('../application');
+const userController = require('../user');
 
 class ContainerController {
-	getContainerName(user, { appName }) {
+	getContainerName(user, appName) {
 		const { userName } = user;
 		return `${userName}-${appName}`;
 	}
 
 	async startContainer(user, { appName }) {
-		const containerName = this.getContainerName(user, { appName });
+		const containerName = this.getContainerName(user, appName);
 		const foundContainer = await docker.getContainer(containerName);
 		const inspectedContainer = await foundContainer.inspect();
 		if (!inspectedContainer.State.Running) {
 			await foundContainer.start();
 			await applicationController.update(user, appName, {
-				autostart: true
+				running: true
 			});
 		}
 		// return applicationController.findByAppName();
 	}
 
 	async stopContainer(user, { appName }) {
-		const containerName = this.getContainerName(user, { appName });
+		const containerName = this.getContainerName(user, appName);
 		const foundContainer = await docker.getContainer(containerName);
 		const inspectedContainer = await foundContainer.inspect();
 		console.log(inspectedContainer);
 		if (inspectedContainer.State.Running) {
 			await foundContainer.stop();
 			await applicationController.update(user, appName, {
-				autostart: false
+				running: false
 			});
 		}
 	}
 
 	async removeContainer(user, { appName }) {
 		try {
-			const containerName = this.getContainerName(user, { appName });
+			const containerName = this.getContainerName(user, appName);
 			const oldContainer = await docker.getContainer(containerName);
 			await oldContainer.inspect();
 			return oldContainer.remove({ force: true });
@@ -50,7 +51,7 @@ class ContainerController {
 
 	// eslint-disable-next-line
 	async createContainer(user, { appName, imageName, env, labels }) {
-		const containerName = this.getContainerName(user, { appName });
+		const containerName = this.getContainerName(user, appName);
 		const createContainerOpts = {
 			Image: imageName,
 			name: containerName
@@ -68,7 +69,7 @@ class ContainerController {
 	}
 
 	async createMongoContainer(user, { appName }) {
-		const containerName = this.getContainerName(user, { appName });
+		const containerName = this.getContainerName(user, appName);
 		try {
 			const oldContainer = await docker.getContainer(containerName);
 			await oldContainer.inspect();
@@ -80,6 +81,10 @@ class ContainerController {
 					imageName: 'mvertes/alpine-mongo:4.0.5-0',
 					appName
 				});
+				const foundUser = await userController.findUser(user);
+				await foundUser.update({
+					mongoContainerId: newContainer.id
+				});
 				appLogger.info(`created mongo container for user ${user.email}.`);
 				return newContainer;
 			}
@@ -88,8 +93,8 @@ class ContainerController {
 	}
 
 	async createMongoExpressContainer(user, { appName }) {
-		const containerName = this.getContainerName(user, { appName });
-		const mongoContainerName = this.getContainerName(user, { appName: 'mongoDB' });
+		const containerName = this.getContainerName(user, appName);
+		const mongoContainerName = this.getContainerName(user, 'mongoDB');
 		try {
 			const oldContainer = await docker.getContainer(containerName);
 			await oldContainer.inspect();
@@ -109,12 +114,14 @@ class ContainerController {
 						'traefik.enable': 'true',
 						'traefik.backend': `/mongo/${user.email.split('@')[0]}`,
 						'traefik.docker.network': 'traefik',
-						'traefik.frontend.rule': `Host:cloudhost.localhost;PathPrefix:/mongo/${
-							user.email.split('@')[0]
-						}`,
-						'traefik.frontend.auth.forward.address': `${process.env.BACKEND}auth/mongoexpress`,
+						'traefik.frontend.rule': `Host:cloudhost;PathPrefix:/mongo/${user.email.split('@')[0]}`,
+						'traefik.frontend.auth.forward.address': `${process.env.BACKEND}/auth/mongoexpress`,
 						'traefik.port': '8081'
 					}
+				});
+				const foundUser = await userController.findUser(user);
+				await foundUser.update({
+					mongoExpressContainerId: newContainer.id
 				});
 				appLogger.info(`created mongo-express container for user ${user.email}.`);
 				return newContainer;
@@ -123,15 +130,14 @@ class ContainerController {
 		}
 	}
 
-	async startAllRunningContainers() {
+	async startAllRunningUserContainers() {
 		const applications = await applicationController.findAllRunningContainers();
 		// eslint-disable-next-line
-		console.log({ applications });
 		return applications.reduce(async (promise, application) => {
 			await promise;
 
 			const { appName, user_id } = application; // eslint-disable-line
-			const containerName = this.getContainerName({ userName: user_id.split('@')[0] }, { appName });
+			const containerName = this.getContainerName({ userName: user_id.split('@')[0] }, appName);
 			try {
 				const foundContainer = await docker.getContainer(containerName);
 				const inspectedContainer = await foundContainer.inspect();
@@ -140,6 +146,41 @@ class ContainerController {
 					appLogger.info(`started container ${containerName}`);
 				} else {
 					appLogger.info(`container ${containerName} is already running`);
+				}
+			} catch (error) {
+				if (error.statusCode === 404) {
+					Promise.resolve();
+				} else {
+					Promise.reject();
+				}
+			}
+		}, Promise.resolve());
+	}
+
+	async startAllMongoContainers() {
+		const users = await userController.findAllMongoContainers();
+		// eslint-disable-next-line
+		console.log(users.map((user) => user.get({ plain: true })));
+		return users.reduce(async (promise, user) => {
+			await promise;
+
+			try {
+				const foundMongoContainer = await docker.getContainer(user.mongoContainerId);
+				const inspectedMongoContainer = await foundMongoContainer.inspect();
+				if (!inspectedMongoContainer.State.Running) {
+					await foundMongoContainer.start();
+					appLogger.info(`started mongo container from user ${user.email}`);
+				} else {
+					appLogger.info(`mongo container from user ${user.email} is already running`);
+				}
+
+				const foundMongExpressContainer = await docker.getContainer(user.mongoExpressContainerId);
+				const inspectedMongoExpressContainer = await foundMongExpressContainer.inspect();
+				if (!inspectedMongoExpressContainer.State.Running) {
+					await foundMongExpressContainer.start();
+					appLogger.info(`started mongo-express container from user ${user.email}`);
+				} else {
+					appLogger.info(`mongo-express container from user ${user.email} is already running`);
 				}
 			} catch (error) {
 				if (error.statusCode === 404) {

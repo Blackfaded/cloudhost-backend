@@ -1,12 +1,13 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const axios = require('../config/axios');
-const config = require('../config/connections');
-const createOrUpdateUser = require('../controllers/user/createOrUpdateUser');
+const axios = require('../../../config/axios');
+const config = require('../../../config/connections');
+const createOrUpdateUser = require('../../../controllers/user/createOrUpdateUser');
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
+	console.log('yfd');
 	const { username, password } = req.body;
 	try {
 		const {

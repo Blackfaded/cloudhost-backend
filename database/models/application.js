@@ -21,11 +21,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
-		needsMongo: {
-			type: DataTypes.BOOLEAN,
-			defaultValue: false
-		},
-		autostart: {
+		running: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: true
 		}

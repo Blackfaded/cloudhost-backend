@@ -1,8 +1,14 @@
 const docker = require('./index');
 const { appLogger } = require('../../config/winston');
 const containerController = require('./container');
+const userController = require('../user');
 
 class NetworkController {
+	getUsersNetWorkName(user) {
+		const userName = userController.getUserName(user);
+		return `network-${userName}`;
+	}
+
 	async createNetwork(network) {
 		try {
 			const foundNetwork = await docker.getNetwork(network);
@@ -51,7 +57,7 @@ class NetworkController {
 	}
 
 	async attachContainerToNetworks(user, { appName, networkNames }) {
-		const containerName = containerController.getContainerName(user, { appName });
+		const containerName = containerController.getContainerName(user, appName);
 		return networkNames.reduce(async (promise, networkName) => {
 			// This line will wait for the last async function to finish.
 			// The first iteration uses an already resolved Promise

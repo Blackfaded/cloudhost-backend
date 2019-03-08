@@ -6,8 +6,6 @@ services:
   command: npm run start
   networks:
    - app
-   - users
-   - elk
   env_file:
    - .env
   depends_on:

@@ -25,11 +25,11 @@ router.get('/:appName', async (req, res) => {
 	try {
 		const { appName } = req.params;
 		const { user } = req;
-		const application = await applicationController.findByAppName(user, appName);
-		return res.json(application[0]);
+		const applications = await applicationController.findByAppName(user, appName);
+		return res.json(applications[0]);
 	} catch (error) {
 		console.log({ error });
-		return res.json([]);
+		return res.json({});
 	}
 });
 
@@ -49,7 +49,6 @@ router.post('/', async (req, res) => {
 			return res.boom.badRequest("appName can't be longer than 20 characters");
 		}
 		const archive = 'archive.tar.gz';
-		console.log({ buildScript });
 		const path = await downloader.getRepositoryArchive(req.user, {
 			repositoryId,
 			branchName,
@@ -78,12 +77,18 @@ router.post('/', async (req, res) => {
 
 		io.of('/test').emit('beginStartApplication');
 		await applicationController.destroyByAppName(req.user, appName);
+		await containerController.removeContainer(req.user, { appName });
 
+		const usersNetworkName = networkController.getUsersNetWorkName(req.user);
+		await networkController.createNetwork(usersNetworkName);
+
+		let mongoContainerId = '';
 		if (needsMongo) {
 			const mongoAppName = 'mongoDB';
-			await containerController.createMongoContainer(req.user, {
+			const mongoContainer = await containerController.createMongoContainer(req.user, {
 				appName: mongoAppName
 			});
+			mongoContainerId = mongoContainer.id;
 
 			const mongoExpressAppName = 'mongoExpress';
 			await containerController.createMongoExpressContainer(req.user, {
@@ -92,17 +97,26 @@ router.post('/', async (req, res) => {
 
 			await networkController.attachContainerToNetworks(req.user, {
 				appName: mongoAppName,
-				networkNames: ['cloudhost_users']
+				networkNames: [usersNetworkName]
 			});
 
 			await networkController.attachContainerToNetworks(req.user, {
 				appName: mongoExpressAppName,
-				networkNames: ['traefik', 'cloudhost_users']
+				networkNames: ['traefik', usersNetworkName]
 			});
 
 			await containerController.startContainer(req.user, { appName: mongoAppName });
 			await containerController.startContainer(req.user, { appName: mongoExpressAppName });
 		}
+
+		const containeroptions = {
+			appName,
+			imageName
+		};
+		if (mongoContainerId) {
+			containeroptions.env = [`MONGO=${mongoContainerId}`];
+		}
+		const createdContainer = await containerController.createContainer(req.user, containeroptions);
 
 		const newApplication = await applicationController.createApplication(req.user, {
 			appName,
@@ -111,14 +125,9 @@ router.post('/', async (req, res) => {
 			repositoryName
 		});
 
-		await containerController.removeContainer(req.user, { appName });
-		const createdContainer = await containerController.createContainer(req.user, {
-			appName,
-			imageName
-		});
 		await networkController.attachContainerToNetworks(req.user, {
 			appName,
-			networkNames: ['traefik', 'cloudhost_users']
+			networkNames: ['traefik', usersNetworkName]
 		});
 		await createdContainer.start();
 

@@ -1,6 +1,6 @@
 const docker = require('./index');
 const io = require('../websocket');
-
+console.log({ io });
 class ImageController {
 	getImageName(user, { repositoryName, branchName, runScript }) {
 		const { userName } = user;
@@ -14,6 +14,8 @@ class ImageController {
 
 	async buildImage(options) {
 		const { path, archive, imageName } = options;
+
+		// TODO: fix io is not initialized yet
 		io.of('/test').emit('startBuildImage');
 		const image = await docker.buildImage(
 			{
