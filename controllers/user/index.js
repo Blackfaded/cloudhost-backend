@@ -28,11 +28,8 @@ class UserController {
 	findAllMongoContainers() {
 		return models.User.findAll({
 			where: {
-				mongoContainerId: {
-					[models.Sequelize.Op.ne]: null
-				},
-				mongoExpressContainerId: {
-					[models.Sequelize.Op.ne]: null
+				hasMongoDB: {
+					[models.Sequelize.Op.ne]: false
 				}
 			}
 		});

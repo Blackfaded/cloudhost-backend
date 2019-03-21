@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 const http = require('http');
-
 const debug = require('debug')('cloudhost:server');
+const io = require('../controllers/websocket');
 const models = require('../database/models');
 const umzug = require('../database/umzug');
 const { appLogger } = require('../config/winston');
 const app = require('../app');
-const io = require('../controllers/websocket');
+
 const initializer = require('../controllers/initialize');
 
 /**

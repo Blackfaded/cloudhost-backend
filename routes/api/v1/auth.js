@@ -7,7 +7,6 @@ const createOrUpdateUser = require('../../../controllers/user/createOrUpdateUser
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-	console.log('yfd');
 	const { username, password } = req.body;
 	try {
 		const {
@@ -34,7 +33,6 @@ router.post('/', async (req, res) => {
 			const userToken = {
 				email: updatedOrCreatedUser.email
 			};
-			console.log('ok');
 			const token = jwt.sign(userToken, config.jwt.secret);
 
 			res.json({ token });

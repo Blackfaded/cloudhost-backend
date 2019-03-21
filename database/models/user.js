@@ -23,8 +23,10 @@ module.exports = (sequelize, DataTypes) => {
 		},
 
 		lastLogin: DataTypes.DATE,
-		mongoContainerId: DataTypes.STRING,
-		mongoExpressContainerId: DataTypes.STRING,
+		hasMongoDB: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false
+		},
 		profilePictureUrl: DataTypes.STRING
 	});
 

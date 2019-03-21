@@ -1,6 +1,5 @@
 const docker = require('./index');
-const io = require('../websocket');
-console.log({ io });
+
 class ImageController {
 	getImageName(user, { repositoryName, branchName, runScript }) {
 		const { userName } = user;
@@ -12,11 +11,12 @@ class ImageController {
 		return `${userName}/${appName}`;
 	}
 
-	async buildImage(options) {
+	async buildImage(options, io) {
 		const { path, archive, imageName } = options;
 
+		console.log(io);
 		// TODO: fix io is not initialized yet
-		io.of('/test').emit('startBuildImage');
+		io.of('/applicationCreate').emit('startBuildImage');
 		const image = await docker.buildImage(
 			{
 				context: path,
@@ -27,14 +27,12 @@ class ImageController {
 		image.on('data', (chunk) => {
 			const output = JSON.parse(chunk.toString()).stream;
 			console.log(output);
-
-			// io.of('/test').emit('buildProgress', { message: output });
 		});
 
 		await new Promise((resolve, reject) => {
 			docker.modem.followProgress(image, (err, res) => (err ? reject(err) : resolve(res)));
 		});
-		io.of('/test').emit('finishBuildImage');
+		io.of('/applicationCreate').emit('finishBuildImage');
 	}
 
 	async getImage(imageName) {

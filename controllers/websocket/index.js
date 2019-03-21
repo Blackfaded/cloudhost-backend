@@ -1,7 +1,6 @@
 const io = require('socket.io')();
 const logController = require('./logs');
 
-console.log({ io });
 io.on('connection', (socket) => {
 	console.log('User connected');
 	console.log(socket.id);
@@ -13,6 +12,11 @@ io.on('connection', (socket) => {
 io.of('/logs').on('connection', (socket) => {
 	console.log('id', socket.id);
 	socket.on('getLogs', logController.sendLogs(socket));
+});
+
+io.of('/applicationCreate').on('connection', (socket) => {
+	console.log('id', socket.id);
+	//socket.on('getLogs', logController.sendLogs(socket));
 });
 
 module.exports = io;

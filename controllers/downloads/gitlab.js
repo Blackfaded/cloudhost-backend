@@ -2,7 +2,6 @@ const tmp = require('tmp-promise');
 const path = require('path');
 const fs = require('fs');
 const axios = require('../../config/axios');
-const io = require('../websocket');
 
 class Downloader {
 	makeTempDir() {
@@ -16,7 +15,7 @@ class Downloader {
 		});
 	}
 
-	getRepositoryArchive(user, options) {
+	getRepositoryArchive(user, options, io) {
 		const { repositoryId, branchName, archive } = options;
 		return new Promise(async (resolve, reject) => {
 			try {
@@ -42,7 +41,7 @@ class Downloader {
 						if (progress >= oldProgress + 5) {
 							oldProgress = progress;
 							console.log({ downloaded, downloadSize, progress });
-							io.of('/test').emit('repoDownloadProgress', { progress });
+							io.of('/applicationCreate').emit('repoDownloadProgress', { progress });
 						}
 
 						output.write(Buffer.from(chunk));

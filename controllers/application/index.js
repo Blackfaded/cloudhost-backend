@@ -74,6 +74,22 @@ class ApplicationController {
 			}, Promise.resolve());
 		}
 	}
+
+	async destroyByContainerName(userId, appName) {
+		const foundApps = await this.findAll({
+			where: {
+				appName,
+				user_id: userId
+			}
+		});
+		console.log({ foundApps });
+		if (foundApps.length) {
+			await foundApps.reduce(async (promise, app) => {
+				await promise;
+				await app.destroy();
+			}, Promise.resolve());
+		}
+	}
 }
 
 module.exports = new ApplicationController();

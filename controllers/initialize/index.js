@@ -6,8 +6,8 @@ class Initializer {
 		await imageController.getImage('mvertes/alpine-mongo:4.0.5-0');
 		await imageController.getImage('mongo-express:0.49');
 
-		await containerController.startAllRunningUserContainers();
 		await containerController.startAllMongoContainers();
+		await containerController.startAllRunningUserContainers();
 	}
 }
 
