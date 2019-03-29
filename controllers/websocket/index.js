@@ -14,9 +14,4 @@ io.of('/logs').on('connection', (socket) => {
 	socket.on('getLogs', logController.sendLogs(socket));
 });
 
-io.of('/applicationCreate').on('connection', (socket) => {
-	console.log('id', socket.id);
-	//socket.on('getLogs', logController.sendLogs(socket));
-});
-
 module.exports = io;

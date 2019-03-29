@@ -1,9 +1,9 @@
 const docker = require('./index');
 
 class ImageController {
-	getImageName(user, { repositoryName, branchName, runScript }) {
+	getImageName(user, { repositoryName, repositoryBranch, runScript }) {
 		const { userName } = user;
-		return `${userName}_repository-${repositoryName}_branch-${branchName}_runscript-${runScript}`;
+		return `${userName}_repository-${repositoryName}_branch-${repositoryBranch}_runscript-${runScript}`;
 	}
 
 	getMountPath(user, { appName }) {
@@ -11,12 +11,11 @@ class ImageController {
 		return `${userName}/${appName}`;
 	}
 
-	async buildImage(options, io) {
+	async buildImage(options, socket) {
 		const { path, archive, imageName } = options;
 
-		console.log(io);
 		// TODO: fix io is not initialized yet
-		io.of('/applicationCreate').emit('startBuildImage');
+		socket.emit('startBuildImage');
 		const image = await docker.buildImage(
 			{
 				context: path,
@@ -32,7 +31,7 @@ class ImageController {
 		await new Promise((resolve, reject) => {
 			docker.modem.followProgress(image, (err, res) => (err ? reject(err) : resolve(res)));
 		});
-		io.of('/applicationCreate').emit('finishBuildImage');
+		socket.emit('finishBuildImage');
 	}
 
 	async getImage(imageName) {

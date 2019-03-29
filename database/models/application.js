@@ -21,6 +21,14 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
+		runScript: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		buildScript: {
+			type: DataTypes.STRING,
+			allowNull: true
+		},
 		running: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: true

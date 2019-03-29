@@ -47,17 +47,40 @@ router.delete('/:appName', async (req, res) => {
 
 router.post('/', async (req, res) => {
 	try {
-		const { repositoryId, branchName, runScript, appName, repositoryName, buildScript } = req.body; // eslint-disable-line
-
+		const {
+			repositoryId,
+			repositoryBranch,
+			runScript,
+			appName,
+			repositoryName,
+			buildScript,
+			socketId
+		} = req.body;
+		console.log({
+			repositoryId,
+			repositoryBranch,
+			runScript,
+			appName,
+			repositoryName,
+			buildScript,
+			socketId
+		});
 		if (appName.length >= 30) {
 			return res.boom.badRequest("appName can't be longer than 30 characters");
 		}
+
+		const socket = req.io.to(socketId);
+
 		const archive = 'archive.tar.gz';
-		const path = await downloader.getRepositoryArchive(req.user, {
-			repositoryId,
-			branchName,
-			archive
-		}, req.app.io);
+		const path = await downloader.getRepositoryArchive(
+			req.user,
+			{
+				repositoryId,
+				repositoryBranch,
+				archive
+			},
+			socket
+		);
 
 		await dockerfileController.createDockerfile(req.user, {
 			dir: path,
@@ -69,7 +92,7 @@ router.post('/', async (req, res) => {
 
 		const imageName = imageController.getImageName(req.user, {
 			repositoryName,
-			branchName,
+			repositoryBranch,
 			runScript
 		});
 
@@ -79,10 +102,10 @@ router.post('/', async (req, res) => {
 				archive,
 				imageName
 			},
-			req.app.io
+			socket
 		);
 
-		req.app.io.of('/applicationCreate').emit('beginStartApplication');
+		socket.emit('beginStartApplication');
 		await applicationController.destroyByAppName(req.user, appName);
 		await containerController.removeContainer(req.user, appName);
 
@@ -99,8 +122,10 @@ router.post('/', async (req, res) => {
 		const newApplication = await applicationController.createApplication(req.user, {
 			appName,
 			repositoryId,
-			repositoryBranch: branchName,
-			repositoryName
+			repositoryBranch,
+			repositoryName,
+			runScript,
+			buildScript
 		});
 
 		await networkController.attachContainerToNetworks(req.user, {
@@ -109,7 +134,7 @@ router.post('/', async (req, res) => {
 		});
 		await createdContainer.start();
 
-		req.app.io.of('/applicationCreate').emit('finishStartApplication');
+		socket.emit('finishStartApplication');
 
 		return res.json(newApplication.get({ plain: true }));
 	} catch (error) {

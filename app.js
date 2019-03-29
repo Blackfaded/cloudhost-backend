@@ -9,7 +9,11 @@ const routes = require('./routes');
 const io = require('./controllers/websocket');
 
 const app = express();
-app.io = io;
+app.use((req, res, next) => {
+	req.io = io;
+	console.log(req.io);
+	next();
+});
 app.use(boom());
 app.use(cors());
 configPassport(app);

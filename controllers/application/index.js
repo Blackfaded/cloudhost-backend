@@ -4,7 +4,10 @@ const imagesController = require('../docker/images');
 
 class ApplicationController {
 	// eslint-disable-next-line
-	async createApplication(user, { appName, repositoryId, repositoryBranch, repositoryName }) {
+	async createApplication(
+		user,
+		{ appName, repositoryId, repositoryBranch, repositoryName, runScript, buildScript }
+	) {
 		const mountPath = imagesController.getMountPath(user, { appName });
 		const foundUser = await findUserByEmail(user.email);
 		try {
@@ -13,7 +16,9 @@ class ApplicationController {
 				appName,
 				repositoryId,
 				repositoryBranch,
-				repositoryName
+				repositoryName,
+				runScript,
+				buildScript: buildScript || null
 			});
 			await foundUser.addApplication(app);
 			return app;

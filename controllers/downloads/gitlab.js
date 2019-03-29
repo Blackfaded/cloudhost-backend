@@ -15,15 +15,15 @@ class Downloader {
 		});
 	}
 
-	getRepositoryArchive(user, options, io) {
-		const { repositoryId, branchName, archive } = options;
+	getRepositoryArchive(user, options, socket) {
+		const { repositoryId, repositoryBranch, archive } = options;
 		return new Promise(async (resolve, reject) => {
 			try {
 				const { path: dir } = await this.makeTempDir();
 				const output = fs.createWriteStream(path.join(dir, archive));
 
 				const { data: stream } = await axios.get(
-					`api/v4/projects/${repositoryId}/repository/archive?sha=${branchName}`,
+					`api/v4/projects/${repositoryId}/repository/archive?sha=${repositoryBranch}`,
 					{
 						headers: {
 							Authorization: `Bearer ${user.gitlabAccessToken}`
@@ -41,7 +41,7 @@ class Downloader {
 						if (progress >= oldProgress + 5) {
 							oldProgress = progress;
 							console.log({ downloaded, downloadSize, progress });
-							io.of('/applicationCreate').emit('repoDownloadProgress', { progress });
+							socket.emit('repoDownloadProgress', { progress });
 						}
 
 						output.write(Buffer.from(chunk));
