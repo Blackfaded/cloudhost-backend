@@ -3,7 +3,8 @@ const docker = require('./index');
 class ImageController {
 	getImageName(user, { repositoryName, repositoryBranch, runScript }) {
 		const { userName } = user;
-		return `${userName}_repository-${repositoryName}_branch-${repositoryBranch}_runscript-${runScript}`;
+		const imageName = `${userName}_repository-${repositoryName}_branch-${repositoryBranch}_runscript-${runScript}`;
+		return imageName.toLowerCase();
 	}
 
 	getMountPath(user, { appName }) {

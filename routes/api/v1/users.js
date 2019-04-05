@@ -2,7 +2,6 @@ const express = require('express');
 const axios = require('../../../config/axios');
 const userController = require('../../../controllers/user');
 
-
 const { isAdmin } = require('../../../middlewares/roles');
 
 const router = express.Router();
@@ -23,6 +22,19 @@ router.get('/self', async (req, res) => {
 	}
 });
 
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     description: Returns users
+ *     tags:
+ *      - Users
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: users
+ */
 router.get('/', isAdmin, async (req, res) => {
 	try {
 		const users = await userController.findAllUsers();
