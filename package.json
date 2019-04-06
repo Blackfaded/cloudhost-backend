@@ -49,8 +49,7 @@
 		"swagger-ui-express": "^4.0.2",
 		"tmp-promise": "^1.0.5",
 		"umzug": "^2.2.0",
-		"winston": "^3.1.0",
-		"winston-elasticsearch": "^0.7.7"
+		"winston": "^3.1.0"
 	},
 	"devDependencies": {
 		"cross-env": "^5.2.0",

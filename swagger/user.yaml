@@ -1,31 +1,263 @@
+parameters:
+ email:
+  in: path
+  name: email
+  description: Users email
+  required: true
+  schema:
+   type: string
+
+components:
+ responses:
+  UnauthorizedError:
+   description: Access token is missing or invalid
+  BadRequest:
+   description: Bad request
+ schemas:
+  User:
+   type: object
+   properties:
+    email:
+     type: string
+     description: Users email address
+    gitlabId:
+     type: number
+     description: Users gitlab id
+    username:
+     type: string
+     description: Users name
+    active:
+     type: boolean
+     description: Users active status
+    lastLogin:
+     type: string
+     description: Users last login date
+    hasMongoDB:
+     type: boolean
+     description: Indicates weather the user has a mongo db or not
+    profilePictureUrl:
+     type: string
+     description: Link to users gitlab profile picture
+    createdAt:
+     type: string
+     description: Users creation date
+    updatedAt:
+     type: string
+     description: Users last update date
+    roles:
+     type: array
+     items:
+      type: string
+     description: User roles
+  Project:
+   type: object
+   properties:
+    id:
+     type: string
+     description: project id
+    path:
+     type: string
+     description: projects path
+    path_with_namespace:
+     type: string
+     description: project path with namespace
+
 paths:
- /users/: # path of the user from your endpoint
-  post: # endpoint request type (post request)
-   tags: # Tag property
-    - User # Value of the tag
-   summary: creates a new user
+ /users:
+  get:
+   security:
+    - bearerAuth: []
+   description: Returns users
+   tags: [Admin]
    produces:
     - application/json
-   parameters: # request parameters
-    - in: body # request body
-      name: sign up # name of request, can be any name
-      description: It enables a user to create an account
-      required: false # can also be true depending on user preference
-      schema: # Schema definition
-       $ref: '#/definitions/signUp'
-   responses: # server responses
-    201:
-     description: An object with user details
-definitions: # Schema defination for request body
- signUp:
-  type: object
-  properties:
-   user:
-    type: object
-    properties:
-     username:
-      type: string
-     email:
-      type: string
-     password:
-      type: string
+   responses:
+    200:
+     description: users
+     content:
+      application/json:
+       schema:
+        type: array
+        items:
+         $ref: '#/components/schemas/User'
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+ /users/self:
+  get:
+   security:
+    - bearerAuth: []
+   description: Returns the authorized user
+   tags: [User]
+   produces:
+    - application/json
+   responses:
+    200:
+     description: user
+     content:
+      application/json:
+       schema:
+        type: object
+        properties:
+         email:
+          type: string
+          description: Users email address
+         name:
+          type: string
+          description: Users name
+         username:
+          type: string
+          description: Users gitlab name
+         roles:
+          type: array
+          items:
+           type: string
+          description: User roles
+         profilePictureUrl:
+          type: string
+          description: Link to users gitlab profile picture
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+ /users/{email}:
+  get:
+   security:
+    - bearerAuth: []
+   description: Returns user by email
+   tags: [Admin]
+   produces:
+    - application/json
+   parameters:
+    - $ref: '#/parameters/email'
+   responses:
+    200:
+     description: user
+     content:
+      application/json:
+       schema:
+        $ref: '#/components/schemas/User'
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+
+  patch:
+   security:
+    - bearerAuth: []
+   description: Updates user by email
+   tags: [Admin]
+   produces:
+    - application/json
+   consumes:
+    - application/json
+   parameters:
+    - $ref: '#/parameters/email'
+   requestBody:
+    description: Data to be updated
+    required: true
+    content:
+     application/json:
+      schema:
+       type: object
+       properties:
+        active:
+         type: boolean
+         description: Users active status
+   responses:
+    200:
+     description: user
+     content:
+      application/json:
+       schema:
+        $ref: '#/components/schemas/User'
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+
+ /users/{email}/roles:
+  post:
+   security:
+    - bearerAuth: []
+   description: Adds role to user by email
+   tags: [Admin]
+   produces:
+    - application/json
+   consumes:
+    - application/json
+   parameters:
+    - $ref: '#/parameters/email'
+   requestBody:
+    description: Role to be assigned
+    required: true
+    content:
+     application/json:
+      schema:
+       type: object
+       properties:
+        role:
+         type: string
+         description: Role to be added
+   responses:
+    200:
+     description: user
+     content:
+      application/json:
+       schema:
+        $ref: '#/components/schemas/User'
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+
+ /users/{email}/roles/{role}:
+  delete:
+   security:
+    - bearerAuth: []
+   description: Removes role from user by email
+   tags: [Admin]
+   produces:
+    - application/json
+   parameters:
+    - $ref: '#/parameters/email'
+    - in: path
+      name: role
+      description: Role to be removed
+      required: true
+      schema:
+       type: string
+   responses:
+    200:
+     description: user
+     content:
+      application/json:
+       schema:
+        $ref: '#/components/schemas/User'
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+
+ /users/{email}/projects:
+  get:
+   security:
+    - bearerAuth: []
+   description: Returns all projects from authenticated user
+   tags: [User]
+   produces:
+    - application/json
+   parameters:
+    - $ref: '#/parameters/email'
+   responses:
+    200:
+     description: user
+     content:
+      application/json:
+       schema:
+        $ref: '#/components/schemas/Project'
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'

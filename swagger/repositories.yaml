@@ -1,0 +1,69 @@
+components:
+ responses:
+  UnauthorizedError:
+   description: Access token is missing or invalid
+  BadRequest:
+   description: Bad request
+
+paths:
+ /repositories/{repositoryId}/branches:
+  get:
+   security:
+    - bearerAuth: []
+   description: Returns repository branches
+   tags: [User]
+   produces:
+    - application/json
+   parameters:
+    - in: path
+      name: repositoryId
+      required: true
+      schema:
+       type: string
+   responses:
+    200:
+     description: branches
+     content:
+      application/json:
+       schema:
+        type: array
+        items:
+         type: string
+         description: the branch name
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+ /repositories/{repositoryId}/branches/{branchName}/runscripts:
+  get:
+   security:
+    - bearerAuth: []
+   description: Returns branche runscript from package.json
+   tags: [User]
+   produces:
+    - application/json
+   parameters:
+    - in: path
+      name: repositoryId
+      required: true
+      schema:
+       type: string
+    - in: path
+      name: branchName
+      required: true
+      schema:
+       type: string
+   responses:
+    200:
+     description: branches
+     content:
+      application/json:
+       schema:
+        type: array
+        items:
+         type: string
+         description: the runscript name
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'

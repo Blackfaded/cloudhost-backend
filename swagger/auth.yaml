@@ -1,0 +1,44 @@
+components:
+ securitySchemes:
+  bearerAuth: # arbitrary name for the security scheme
+   type: http
+   scheme: bearer
+   bearerFormat: JWT
+  responses:
+   UnauthorizedError:
+    description: Invalid credentials
+
+paths:
+ /auth:
+  post:
+   tags: [Login]
+   description: Login to the application
+   produces:
+    - application/json
+   requestBody:
+    description: Data to be updated
+    required: true
+    content:
+     application/json:
+      schema:
+       type: object
+       properties:
+        username:
+         type: string
+         description: Username to use for login
+        password:
+         type: string
+         description: Users password
+   responses:
+    200:
+     description: login
+     content:
+      application/json:
+       schema:
+        type: object
+        properties:
+         token:
+          type: string
+          description: The JWT
+    401:
+     $ref: '#/components/responses/UnauthorizedError'

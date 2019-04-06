@@ -9,16 +9,9 @@ const configPassport = require('./config/passport');
 const { httpLogger } = require('./config/winston');
 const routes = require('./routes');
 const io = require('./controllers/websocket');
-const swaggerconfig = require('./swagger/def');
+const swaggerOptions = require('./swagger/def');
 
-const options = {
-	swaggerDefinition: {
-		...swaggerconfig
-	},
-	apis: swaggerconfig.apis
-};
-
-const specs = swaggerJsdoc(options);
+const specs = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 app.use((req, res, next) => {

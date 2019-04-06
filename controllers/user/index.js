@@ -2,6 +2,16 @@ const models = require('../../database/models');
 const { findRoles } = require('../roles');
 
 class UserController {
+	cleanupUser(user) {
+		const plainUser = user.get({ plain: true });
+		const cleanedUser = {
+			...plainUser,
+			roles: plainUser.roles.map((role) => role.name)
+		};
+		delete cleanedUser.gitlabAccessToken;
+		return cleanedUser;
+	}
+
 	getUserName(user) {
 		return user.email.split('@')[0];
 	}

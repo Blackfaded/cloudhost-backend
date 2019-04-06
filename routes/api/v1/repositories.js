@@ -3,27 +3,29 @@ const axios = require('../../../config/axios');
 
 const router = express.Router();
 
-router.get('/:id/branches', async (req, res) => {
+router.get('/:repositoryId/branches', async (req, res) => {
 	try {
 		const { data: branches } = await axios.get(
-			`api/v4/projects/${req.params.id}/repository/branches`,
+			`api/v4/projects/${req.params.repositoryId}/repository/branches`,
 			{
 				headers: {
 					Authorization: `Bearer ${req.user.gitlabAccessToken}`
 				}
 			}
 		);
-		return res.json(branches).status(200);
+		return res.json(branches.map((branch) => branch.name)).status(200);
 	} catch (error) {
 		console.log(error);
 		return res.boom.badRequest('An error occured while getting the branch');
 	}
 });
 
-router.get('/:id/branches/:branchId/runScripts', async (req, res) => {
+router.get('/:repositoryId/branches/:branchName/runScripts', async (req, res) => {
 	try {
 		const { data } = await axios.get(
-			`api/v4/projects/${req.params.id}/repository/files/package.json/raw?ref=${req.params.branchId}`,
+			`api/v4/projects/${req.params.repositoryId}/repository/files/package.json/raw?ref=${
+				req.params.branchName
+			}`,
 			{
 				headers: {
 					Authorization: `Bearer ${req.user.gitlabAccessToken}`

@@ -35,13 +35,16 @@ router.post('/', async (req, res) => {
 			};
 			const token = jwt.sign(userToken, config.jwt.secret);
 
-			res.json({ token });
+			if (updatedOrCreatedUser.active) {
+				return res.json({ token });
+			}
+			return res.boom.unauthorized('Your account is not active');
 		} catch (error) {
 			console.log(error);
-			res.boom.unauthorized('An error occured while creating or updating the user');
+			return res.boom.unauthorized('An error occured while creating or updating the user');
 		}
 	} catch (e) {
-		res.boom.unauthorized('Invalid Credentials');
+		return res.boom.unauthorized('Invalid Credentials');
 	}
 });
 

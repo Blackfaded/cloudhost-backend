@@ -22,23 +22,13 @@ router.get('/self', async (req, res) => {
 	}
 });
 
-/**
- * @swagger
- * /users:
- *   get:
- *     description: Returns users
- *     tags:
- *      - Users
- *     produces:
- *      - application/json
- *     responses:
- *       200:
- *         description: users
- */
 router.get('/', isAdmin, async (req, res) => {
 	try {
 		const users = await userController.findAllUsers();
-		res.json(users).status(200);
+		const cleanedUser = users.map((user) => {
+			return userController.cleanupUser(user);
+		});
+		res.json(cleanedUser).status(200);
 	} catch (error) {
 		res.boom.badRequest('An error occured while getting users');
 	}
@@ -46,22 +36,29 @@ router.get('/', isAdmin, async (req, res) => {
 
 router.get('/:email', isAdmin, async (req, res) => {
 	try {
-		const user = (await userController.findUserByEmail(req.params.email)).get({ plain: true });
-		res.json(user).status(200);
+		const user = await userController.findUserByEmail(req.params.email);
+		res.json(userController.cleanupUser(user)).status(200);
 	} catch (error) {
 		res.boom.badRequest('An error occured while getting user');
 	}
 });
 
 router.patch('/:email', isAdmin, async (req, res) => {
+	console.log(req.body);
 	try {
-		const user = (await userController.updateUserFieldsByEmail(req.params.email, {
+		if (
+			Object.prototype.hasOwnProperty.call(req.body, 'active') &&
+			req.user.email === req.params.email
+		) {
+			return res.boom.forbidden("You can't edit your own active status");
+		}
+		const user = await userController.updateUserFieldsByEmail(req.params.email, {
 			...req.body
-		})).get({ plain: true });
+		});
 
-		res.json(user).status(200);
+		return res.json(userController.cleanupUser(user)).status(200);
 	} catch (error) {
-		res.boom.badRequest('An error occured while updating user');
+		return res.boom.badRequest('An error occured while updating user');
 	}
 });
 
@@ -71,11 +68,9 @@ router.delete('/:email/roles/:rolename', isAdmin, async (req, res) => {
 		res.boom.forbidden("You can't remove your own role");
 	} else {
 		try {
-			const user = (await userController.deleteUserRole(email, rolename)).get({
-				plain: true
-			});
+			const user = await userController.deleteUserRole(email, rolename);
 
-			res.json(user).status(200);
+			res.json(userController.cleanupUser(user)).status(200);
 		} catch (error) {
 			res.boom.badRequest('An error occured while deleting user role');
 		}
@@ -83,15 +78,14 @@ router.delete('/:email/roles/:rolename', isAdmin, async (req, res) => {
 });
 
 router.post('/:email/roles', isAdmin, async (req, res) => {
+	console.log(req.body);
 	const { role } = req.body;
 	const { email } = req.params;
 	const grantedBy = req.user.email;
 
 	try {
-		const user = (await userController.addUserRole(email, role, grantedBy)).get({
-			plain: true
-		});
-		res.json(user).status(200);
+		const user = await userController.addUserRole(email, role, grantedBy);
+		res.json(userController.cleanupUser(user)).status(200);
 	} catch (error) {
 		res.boom.badRequest('An error occured while deleting user role');
 	}

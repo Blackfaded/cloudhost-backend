@@ -24,7 +24,10 @@ module.exports = (app) => {
 			try {
 				const user = (await findUserByEmail(jwt_payload.email)).get({ plain: true });
 				user.userName = user.email.split('@')[0]; // eslint-disable-line
-				return done(null, user);
+				if (user.active) {
+					return done(null, user);
+				}
+				return done(null, false);
 			} catch (error) {
 				return done(null, false);
 			}

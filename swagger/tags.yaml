@@ -1,0 +1,6 @@
+tags:
+ - name: Login
+ - name: User
+   description: Needs to be loggin in as a user
+ - name: Admin
+   description: Needs to be loggin in as an admin
