@@ -6,7 +6,8 @@ const {
 	MYSQL_DATABASE,
 	MYSQL_USER,
 	MYSQL_PASSWORD,
-	JWT_SECRET
+	JWT_SECRET,
+	FRONTEND
 } = process.env;
 
 module.exports = {
@@ -23,5 +24,6 @@ module.exports = {
 	},
 	jwt: {
 		secret: JWT_SECRET
-	}
+	},
+	host: FRONTEND.split(/^https?:\/\//)[1]
 };

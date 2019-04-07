@@ -1,11 +1,12 @@
+const { host } = require('../config/connections');
+
 module.exports = {
 	openapi: '3.0.1',
 	info: {
 		title: 'Cloudhost API',
-		version: '1.0.0'
+		version: '3.0.1'
 	},
-	host: 'api.cloudhost',
-	basePath: '/v1',
+	host,
 
 	apis: ['./swagger/**/*.yaml']
 

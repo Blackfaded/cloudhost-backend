@@ -2,6 +2,7 @@ const docker = require('./index');
 const { appLogger } = require('../../config/winston');
 const applicationController = require('../application');
 const userController = require('../user');
+const { host } = require('../../config/connections');
 
 class ContainerController {
 	getContainerName(user, appName) {
@@ -101,7 +102,7 @@ class ContainerController {
 						'traefik.enable': 'true',
 						'traefik.backend': `/mongo/${user.email.split('@')[0]}`,
 						'traefik.docker.network': 'traefik',
-						'traefik.frontend.rule': `Host:cloudhost;PathPrefix:/mongo/${user.email.split('@')[0]}`,
+						'traefik.frontend.rule': `Host:${host};PathPrefix:/mongo/${user.email.split('@')[0]}`,
 						'traefik.frontend.auth.forward.address': `${process.env.BACKEND}/auth/mongoexpress`,
 						'traefik.port': '8081'
 					}

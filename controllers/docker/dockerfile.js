@@ -1,6 +1,7 @@
 const { promises: fsp } = require('fs');
 const path = require('path');
 const imageController = require('./images');
+const { host } = require('../../config/connections');
 
 class DockerfileController {
 	populateDockerfile(options) {
@@ -19,7 +20,7 @@ class DockerfileController {
     LABEL traefik.enable=true
     LABEL traefik.backend="${mountPath}"
     LABEL traefik.docker.network="traefik"
-    LABEL traefik.frontend.rule="Host:cloudhost;PathPrefixStrip:/${mountPath}"
+    LABEL traefik.frontend.rule="Host:${host};PathPrefixStrip:/${mountPath}"
     LABEL traefik.port="8080"
     CMD ["npm", "run", "${runScript}"]`;
 	}
