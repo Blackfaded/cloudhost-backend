@@ -14,7 +14,7 @@ app.use((req, res, next) => {
 	next();
 });
 app.use(boom());
-app.use(cors());
+app.use(cors({ credentials: true, origin: process.env.FRONTEND }));
 configPassport(app);
 
 app.use(httpLogger);

@@ -10,8 +10,7 @@ module.exports = (app) => {
 	const opts = {};
 	opts.jwtFromRequest = (req) => {
 		try {
-			const header = req.headers.authorization.split(' ');
-			return header[0] === 'bearer' || header[0] === 'Bearer' ? header[1] : null;
+			return req.cookies.jwt;
 		} catch (error) {
 			return null;
 		}
