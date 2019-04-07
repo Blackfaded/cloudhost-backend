@@ -1,0 +1,187 @@
+parameters:
+ appName:
+  in: path
+  name: appName
+  description: Name of the application
+  required: true
+  schema:
+   type: string
+
+components:
+ responses:
+  UnauthorizedError:
+   description: Access token is missing or invalid
+  BadRequest:
+   description: Bad request
+ schemas:
+  Application:
+   type: object
+   properties:
+    mountPath:
+     type: string
+     description: Path where the app is mounted (relative to baseurl)
+    appName:
+     type: string
+     description: Name of the app
+    repositoryName:
+     type: string
+     description: Name of Gitlab Repository for this application
+    repositoryId:
+     type: number
+     description: ID of Gitlab Repository for this application
+    repositoryBranch:
+     type: string
+     description: Used branch of this application
+    runScript:
+     type: string
+     description: Used runscript from package.json of this application
+    buildScript:
+     type: string
+     description: Used buildscript from package.json of this application
+    running:
+     type: boolean
+     description: Flag if the app is running
+    createdAt:
+     type: string
+     description: Apps creation date
+    updatedAt:
+     type: string
+     description: Apps last update date
+    user_id:
+     type: string
+     description: Username of the app owner
+
+paths:
+ /applications:
+  get:
+   security:
+    - bearerAuth: []
+   description: Returns applications
+   tags: [User]
+   responses:
+    200:
+     description: Ok
+     content:
+      application/json:
+       schema:
+        type: array
+        items:
+         $ref: '#/components/schemas/Application'
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+  post:
+   security:
+    - bearerAuth: []
+   description: Returns applications
+   tags: [User]
+   requestBody:
+    description: Application to be created
+    required: true
+    content:
+     application/json:
+      schema:
+       type: object
+       properties:
+        repositoryId:
+         type: number
+         description: Gitlabs repository ID
+        repositoryBranch:
+         type: string
+         description: Gitlabs repository branch
+        repositoryName:
+         type: string
+         description: Gitlabs repository name
+        runScript:
+         type: string
+         description: Runscript from package.json
+        appName:
+         type: string
+         description: Name of the application
+        buildScript:
+         type: string
+         description: Runscript from package.json
+        socketId:
+         type: string
+         description: Clients socketId for progress during application creation
+       required:
+        - repositoryId
+        - repositoryBranch
+        - repositoryName
+        - runScript
+        - appName
+   responses:
+    200:
+     description: Ok
+     content:
+      application/json:
+       items:
+        $ref: '#/components/schemas/Application'
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+ /applications/{appName}:
+  get:
+   security:
+    - bearerAuth: []
+   description: Returns application
+   tags: [User]
+   parameters:
+    - $ref: '#/parameters/appName'
+   responses:
+    200:
+     description: Ok
+     content:
+      application/json:
+       schema:
+        $ref: '#/components/schemas/Application'
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+  delete:
+   security:
+    - bearerAuth: []
+   description: Deletes application
+   tags: [User]
+   parameters:
+    - $ref: '#/parameters/appName'
+   responses:
+    200:
+     description: Ok
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+ /applications/{appName}/stop:
+  post:
+   security:
+    - bearerAuth: []
+   description: Stops application
+   tags: [User]
+   parameters:
+    - $ref: '#/parameters/appName'
+   responses:
+    200:
+     description: Ok
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'
+ /applications/{appName}/start:
+  post:
+   security:
+    - bearerAuth: []
+   description: Starts application
+   tags: [User]
+   parameters:
+    - $ref: '#/parameters/appName'
+   responses:
+    200:
+     description: Ok
+    401:
+     $ref: '#/components/responses/UnauthorizedError'
+    500:
+     $ref: '#/components/responses/BadRequest'

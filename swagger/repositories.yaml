@@ -12,8 +12,6 @@ paths:
     - bearerAuth: []
    description: Returns repository branches
    tags: [User]
-   produces:
-    - application/json
    parameters:
     - in: path
       name: repositoryId
@@ -40,8 +38,6 @@ paths:
     - bearerAuth: []
    description: Returns branche runscript from package.json
    tags: [User]
-   produces:
-    - application/json
    parameters:
     - in: path
       name: repositoryId

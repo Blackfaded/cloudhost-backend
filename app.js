@@ -3,15 +3,10 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const boom = require('express-boom');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
 const configPassport = require('./config/passport');
 const { httpLogger } = require('./config/winston');
 const routes = require('./routes');
 const io = require('./controllers/websocket');
-const swaggerOptions = require('./swagger/def');
-
-const specs = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 app.use((req, res, next) => {
@@ -29,8 +24,6 @@ app.use(
 		extended: true
 	})
 );
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(cookieParser());
 app.use('/', routes);

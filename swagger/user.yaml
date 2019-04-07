@@ -69,8 +69,6 @@ paths:
     - bearerAuth: []
    description: Returns users
    tags: [Admin]
-   produces:
-    - application/json
    responses:
     200:
      description: users
@@ -90,8 +88,6 @@ paths:
     - bearerAuth: []
    description: Returns the authorized user
    tags: [User]
-   produces:
-    - application/json
    responses:
     200:
      description: user
@@ -127,8 +123,6 @@ paths:
     - bearerAuth: []
    description: Returns user by email
    tags: [Admin]
-   produces:
-    - application/json
    parameters:
     - $ref: '#/parameters/email'
    responses:
@@ -148,8 +142,6 @@ paths:
     - bearerAuth: []
    description: Updates user by email
    tags: [Admin]
-   produces:
-    - application/json
    consumes:
     - application/json
    parameters:
@@ -183,8 +175,6 @@ paths:
     - bearerAuth: []
    description: Adds role to user by email
    tags: [Admin]
-   produces:
-    - application/json
    consumes:
     - application/json
    parameters:
@@ -218,8 +208,6 @@ paths:
     - bearerAuth: []
    description: Removes role from user by email
    tags: [Admin]
-   produces:
-    - application/json
    parameters:
     - $ref: '#/parameters/email'
     - in: path
@@ -246,8 +234,6 @@ paths:
     - bearerAuth: []
    description: Returns all projects from authenticated user
    tags: [User]
-   produces:
-    - application/json
    parameters:
     - $ref: '#/parameters/email'
    responses:

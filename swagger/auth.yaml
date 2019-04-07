@@ -13,8 +13,6 @@ paths:
   post:
    tags: [Login]
    description: Login to the application
-   produces:
-    - application/json
    requestBody:
     description: Data to be updated
     required: true
