@@ -11,11 +11,9 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
 	try {
-		console.log(req.user);
 		const applications = await applicationController.findAllByUser(req.user);
 		return res.json(applications.map((app) => app.get({ plain: true })));
 	} catch (error) {
-		console.log({ error });
 		return res.json([]);
 	}
 });
@@ -27,7 +25,6 @@ router.get('/:appName', async (req, res) => {
 		const applications = await applicationController.findByAppName(user, appName);
 		return res.json(applications[0]);
 	} catch (error) {
-		console.log({ error });
 		return res.json({});
 	}
 });
