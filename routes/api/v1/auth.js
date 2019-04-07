@@ -1,8 +1,10 @@
 const express = require('express');
+const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const axios = require('../../../config/axios');
 const config = require('../../../config/connections');
 const createOrUpdateUser = require('../../../controllers/user/createOrUpdateUser');
+const { isAdmin } = require('../../../middlewares/roles');
 
 const router = express.Router();
 
@@ -48,17 +50,22 @@ router.post('/', async (req, res) => {
 	}
 });
 
-router.get('/mongoexpress', (req, res) => {
+router.get('/mongoexpress', passport.authenticate('jwt', { session: false }), (req, res) => {
 	try {
-		const decoded = jwt.verify(req.cookies.jwt, config.jwt.secret);
-		const user = decoded.email.split('@')[0];
-		console.log(req.headers);
+		const user = req.user.email.split('@')[0];
 		const accessedUser = req.headers['x-forwarded-uri'].split('/')[2];
 		if (user === accessedUser) {
-			console.log('user matches');
 			return res.status(200).send();
 		}
 		return res.boom.unauthorized();
+	} catch (error) {
+		return res.boom.unauthorized();
+	}
+});
+
+router.get('/portainer', passport.authenticate('jwt', { session: false }), isAdmin, (req, res) => {
+	try {
+		return res.status(200).send();
 	} catch (error) {
 		return res.boom.unauthorized();
 	}

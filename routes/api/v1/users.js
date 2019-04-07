@@ -1,7 +1,6 @@
 const express = require('express');
 const axios = require('../../../config/axios');
 const userController = require('../../../controllers/user');
-
 const { isAdmin } = require('../../../middlewares/roles');
 
 const router = express.Router();
