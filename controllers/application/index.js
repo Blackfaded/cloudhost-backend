@@ -27,9 +27,10 @@ class ApplicationController {
 	 */
 	async createApplication(
 		user,
+		// eslint-disable-next-line
 		{ appName, repositoryId, repositoryBranch, repositoryName, runScript, buildScript }
 	) {
-		const mountPath = imagesController.getMountPath(user, { appName });
+		const mountPath = imagesController.getMountPath(user, appName);
 		const foundUser = await findUserByEmail(user.email);
 		try {
 			const app = await models.Application.create({
