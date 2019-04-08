@@ -1,20 +1,44 @@
 const docker = require('./index');
 
+/** Class that controls the docker images */
 class ImageController {
+	/**
+	 * Gets the image name of given user with options
+	 * @param  {object} options
+	 * @param  {string} options.repositoryName The apps repository name
+	 * @param  {string} options.repositoryBranch The apps repository branch
+	 * @param  {string} options.runScript The runscript from package.json
+	 * @returns {string} The Dockerfile content
+	 */
 	getImageName(user, { repositoryName, repositoryBranch, runScript }) {
 		const { userName } = user;
 		const imageName = `${userName}_repository-${repositoryName}_branch-${repositoryBranch}_runscript-${runScript}`;
 		return imageName.toLowerCase();
 	}
 
-	getMountPath(user, { appName }) {
+	/**
+	 * Gets the mount path of the application
+	 * @example
+	 * const user = req.user
+	 * const appName = "mytemplate"
+	 * @param {object} user The user object
+	 * @param  {string} appName The apps name
+	 * @returns {string} The apps mount path
+	 */
+	getMountPath(user, appName) {
 		const { userName } = user;
 		return `${userName}/${appName}`;
 	}
 
-	async buildImage(options, socket) {
-		const { path, archive, imageName } = options;
-
+	/**
+	 * Builds an docker image
+	 * @param {object} options The user object
+	 * @param  {string} options.path The downloaded repositories path
+	 * @param  {string} options.archive The downloaded repositories archive name
+	 * @param  {string} options.imageName The name of the image to be build
+	 * @returns {Promise} The Build promise
+	 */
+	async buildImage({ path, archive, imageName }, socket) {
 		// TODO: fix io is not initialized yet
 		socket.emit('startBuildImage');
 		const image = await docker.buildImage(
@@ -35,6 +59,11 @@ class ImageController {
 		socket.emit('finishBuildImage');
 	}
 
+	/**
+	 * Pulls a docker image
+	 * @param  {string} imageName The name of the image to be pulled
+	 * @returns {Promise} The pulled image promise
+	 */
 	async getImage(imageName) {
 		return new Promise(async (resolve, reject) => {
 			const stream = await docker.pull(imageName);

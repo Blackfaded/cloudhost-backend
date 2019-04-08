@@ -1,5 +1,6 @@
 const express = require('express');
-
+const rimraf = require('rimraf');
+const util = require('util');
 const downloader = require('../../../controllers/downloads/gitlab');
 const imageController = require('../../../controllers/docker/images');
 const containerController = require('../../../controllers/docker/container');
@@ -8,6 +9,8 @@ const applicationController = require('../../../controllers/application');
 const networkController = require('../../../controllers/docker/network');
 
 const router = express.Router();
+
+const rimrafp = util.promisify(rimraf);
 
 router.get('/', async (req, res) => {
 	try {
@@ -53,15 +56,6 @@ router.post('/', async (req, res) => {
 			buildScript,
 			socketId
 		} = req.body;
-		console.log({
-			repositoryId,
-			repositoryBranch,
-			runScript,
-			appName,
-			repositoryName,
-			buildScript,
-			socketId
-		});
 		if (appName.length >= 30) {
 			return res.boom.badRequest("appName can't be longer than 30 characters");
 		}
@@ -133,7 +127,9 @@ router.post('/', async (req, res) => {
 
 		socket.emit('finishStartApplication');
 
-		return res.json(newApplication.get({ plain: true }));
+		await rimrafp(path);
+
+		return res.json(newApplication);
 	} catch (error) {
 		console.log({ error });
 		return res.boom.badRequest('An error occured while creating the application');

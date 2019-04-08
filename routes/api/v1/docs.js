@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const swaggerOptions = require('../../../swagger/def');
@@ -11,6 +12,8 @@ const specs = swaggerJsdoc({
 	apis: swaggerOptions.apis
 });
 
-router.use('/', isAdmin, swaggerUi.serve, swaggerUi.setup(specs));
+router.use('/api', isAdmin, swaggerUi.serve, swaggerUi.setup(specs));
+
+router.use('/controller', isAdmin, express.static(path.join(__dirname, '../../../docs')));
 
 module.exports = router;

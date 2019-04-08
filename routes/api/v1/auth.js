@@ -3,7 +3,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const axios = require('../../../config/axios');
 const config = require('../../../config/connections');
-const createOrUpdateUser = require('../../../controllers/user/createOrUpdateUser');
+const userController = require('../../../controllers/user');
 const { isAdmin } = require('../../../middlewares/roles');
 
 const router = express.Router();
@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
 			});
 			user.accessToken = accessToken;
 
-			const updatedOrCreatedUser = await createOrUpdateUser(user);
+			const updatedOrCreatedUser = await userController.createOrUpdateUser(user);
 
 			// Find or create user in DB
 			const userToken = {
@@ -42,7 +42,6 @@ router.post('/', async (req, res) => {
 			}
 			return res.boom.unauthorized('Your account is not active');
 		} catch (error) {
-			console.log(error);
 			return res.boom.unauthorized('An error occured while creating or updating the user');
 		}
 	} catch (e) {

@@ -1,9 +1,19 @@
+/**
+ * @module Winston
+ */
+
 const appRoot = require('app-root-path');
 const { createLogger, format, transports } = require('winston');
 const expressWinston = require('express-winston');
 
 const { combine, timestamp, printf, colorize, json } = format; // eslint-disable-line
 
+/**
+ * @example
+ * const filename = 'httpLogs'
+ * @param  {string} filename
+ * @returns {object} Winstron file transporter
+ */
 function configFileTransport(filename) {
 	return new transports.File({
 		level: 'info',
@@ -16,6 +26,9 @@ function configFileTransport(filename) {
 	});
 }
 
+/**
+ * @returns {object} Winstron console transporter
+ */
 function configConsoleTransport() {
 	return new transports.Console({
 		level: 'debug',
@@ -46,6 +59,9 @@ if (process.env.NODE_ENV === 'development') {
 	httpTransports.push(configConsoleTransport());
 }
 
+/**
+ * @returns {object} Winstron logger
+ */
 const httpLogger = expressWinston.logger({
 	transports: httpTransports,
 	format: combine(json()),

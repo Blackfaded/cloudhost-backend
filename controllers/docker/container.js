@@ -4,12 +4,24 @@ const applicationController = require('../application');
 const userController = require('../user');
 const { host } = require('../../config/connections');
 
+/** Class that controls Docker containers */
 class ContainerController {
+	/**
+	 * Returns the container name from given user and appName
+	 * @param  {object} user The current user object
+	 * @param  {string} appName Apps Name
+	 * @returns {string} The container name
+	 */
 	getContainerName(user, appName) {
 		const { userName } = user;
 		return `${userName}-${appName}`;
 	}
 
+	/**
+	 * Starts the docker container name from given user and appName
+	 * @param  {object} user The current user object
+	 * @param  {string} appName Apps Name
+	 */
 	async startApplicationContainer(user, appName) {
 		const containerName = this.getContainerName(user, appName);
 		const foundContainer = await docker.getContainer(containerName);
@@ -19,6 +31,11 @@ class ContainerController {
 		}
 	}
 
+	/**
+	 * Stops the docker container name from given user and appName
+	 * @param  {object} user The current user object
+	 * @param  {string} appName Apps Name
+	 */
 	async stopApplicationContainer(user, appName) {
 		const containerName = this.getContainerName(user, appName);
 		const foundContainer = await docker.getContainer(containerName);
@@ -28,6 +45,11 @@ class ContainerController {
 		}
 	}
 
+	/**
+	 * Removes the docker container name from given user and appName
+	 * @param  {object} user The current user object
+	 * @param  {string} appName Apps Name
+	 */
 	async removeContainer(user, appName) {
 		try {
 			const containerName = this.getContainerName(user, appName);
@@ -42,13 +64,41 @@ class ContainerController {
 		}
 	}
 
+	/**
+	 * Starts the docker container name from given user and appName
+	 * @example
+	 * const user = req.user
+	 * const options = {
+	 *   appName: "mytemplate",
+	 *   imageName: "john.doe_repository-mytemplate_branch-master_runscript-start" //see imagecontroller
+	 *   env: [
+	 *     'ME_CONFIG_MONGODB_ENABLE_ADMIN=true',
+	 *     'ME_CONFIG_MONGODB_SERVER=${mongoContainerName}',
+	 *     'ME_CONFIG_SITE_BASEURL=/mongo/john.doe/'
+	 *   ],
+	 *   labels: [
+	 *     'traefik.enable': 'true',
+	 *     'traefik.backend': '/mongo/john.doe',
+	 *     'traefik.docker.network': 'traefik',
+	 *     'traefik.frontend.rule': 'Host:cloudhost.hsrw.eu;PathPrefix:/mongo/john.doe',
+	 *     'traefik.frontend.auth.forward.address': 'api.cloudhost.hsrw.eu/auth/mongoexpress',
+	 *     'traefik.port': '8081'
+	 *   ]
+	 * }
+	 * @param  {object} user The current user object
+	 * @param  {object} options
+	 * @param {string} options.appName Apps name
+	 * @param {string} options.imageName Image name from which the container gets build
+	 * @param {Array.<String>} [options.env] Env variables to be uses by container
+	 * @param {Array.<String>} [options.labels] Labels to be uses by container
+	 * @returns {Promise.<Object>} The dockerode container object
+	 */
 	// eslint-disable-next-line
 	async createContainer(user, { appName, imageName, env, labels }) {
 		const containerName = this.getContainerName(user, appName);
 		const createContainerOpts = {
 			Image: imageName,
 			name: containerName
-			// Env: [`MONGO=${mongoContainerName}`]
 		};
 		if (env) {
 			createContainerOpts.Env = env;
@@ -60,6 +110,15 @@ class ContainerController {
 		return docker.createContainer(createContainerOpts);
 	}
 
+	/**
+	 * Creates or reuses the mongoDB container name from given user
+	 * @example
+	 * const user = req.user
+	 * const appName = "mongoDB"
+	 * @param  {object} user The current user object
+	 * @param  {string} appName Apps Name
+	 * @returns {Promise.<Object>} The dockerode container object
+	 */
 	async createMongoContainer(user, appName) {
 		const containerName = this.getContainerName(user, appName);
 		try {
@@ -80,6 +139,15 @@ class ContainerController {
 		}
 	}
 
+	/**
+	 * Creates or reuses the mongo express container name from given user
+	 * @example
+	 * const user = req.user
+	 * const appName = "mongoExpress"
+	 * @param  {object} user The current user object
+	 * @param  {string} appName Apps Name
+	 * @returns {Promise.<Object>} The dockerode container object
+	 */
 	async createMongoExpressContainer(user, appName) {
 		const containerName = this.getContainerName(user, appName);
 		const mongoContainerName = this.getContainerName(user, 'mongoDB');
@@ -114,6 +182,11 @@ class ContainerController {
 		}
 	}
 
+	/**
+	 * Starts all application containers that have the running flag
+	 * in the database but are not running as docker container
+	 * @returns {Promise}
+	 */
 	async startAllRunningUserContainers() {
 		const applications = await applicationController.findAllRunningContainers();
 		// eslint-disable-next-line
@@ -148,6 +221,11 @@ class ContainerController {
 		}, Promise.resolve());
 	}
 
+	/**
+	 * Starts all mongoDB and mongo-express containers that havethe mongoDB flag
+	 * in the database but are not running as docker container
+	 * @returns {Promise}
+	 */
 	async startAllMongoContainers() {
 		const users = await userController.findAllMongoContainers();
 		// eslint-disable-next-line

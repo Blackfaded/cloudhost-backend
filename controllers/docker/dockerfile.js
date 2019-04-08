@@ -3,11 +3,20 @@ const path = require('path');
 const imageController = require('./images');
 const { host } = require('../../config/connections');
 
+/** Class that controls the Dockerfile creation */
 class DockerfileController {
-	populateDockerfile(options) {
-		const { archive, runScript, mountPath, buildScript } = options; // eslint-disable-line
+	/**
+	 * Creates a Dockerfile with given parameters
+	 * @param  {object} options
+	 * @param  {string} options.archive the downloaded archive name // see download controller
+	 * @param  {string} options.runScript The runscript from package.json
+	 * @param  {string} options.mountPath The apps mountpath
+	 * @param  {string} [options.buildScript] The buildscript from package.json
+	 * @returns {string} The Dockerfile content
+	 */
+	// eslint-disable-next-line
+	populateDockerfile({ archive, runScript, mountPath, buildScript }) {
 		const buildScriptString = buildScript ? `RUN npm run ${buildScript}` : '';
-		console.log({ buildScriptString });
 		return `\
     FROM node:carbon-alpine
     WORKDIR /app
@@ -25,13 +34,30 @@ class DockerfileController {
     CMD ["npm", "run", "${runScript}"]`;
 	}
 
+	/**
+	 * Writes the content to a Dockerfile at given directory
+	 * @param  {string} dir directory to be written at
+	 * @param  {string} content Dockerfile content
+	 * @returns {Promise} The fs write promise
+	 */
 	async writeDockerfile(dir, content) {
 		return fsp.writeFile(path.join(dir, 'Dockerfile'), content, 'utf-8');
 	}
 
+	/**
+	 * Helper function to create and write Dockerfile to filesystem
+	 * @param {object} user The current user object
+	 * @param  {object} options
+	 * @param  {string} options.dir directory to be written at
+	 * @param  {string} options.archive the downloaded archive name // see download controller
+	 * @param  {string} options.runScript The runscript from package.json
+	 * @param  {string} options.appName The apps name
+	 * @param  {string} [options.buildScript] The buildscript from package.json
+	 * @returns {Promise} The fs write promise
+	 */
 	// eslint-disable-next-line
 	async createDockerfile(user, { dir, archive, runScript, appName, buildScript }) {
-		const mountPath = imageController.getMountPath(user, { appName });
+		const mountPath = imageController.getMountPath(user, appName);
 		// eslint-disable-next-line
 		const content = this.populateDockerfile({ archive, runScript, mountPath, buildScript });
 		return this.writeDockerfile(dir, content);

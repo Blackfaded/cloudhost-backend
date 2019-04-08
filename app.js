@@ -9,14 +9,25 @@ const routes = require('./routes');
 const io = require('./controllers/websocket');
 
 const app = express();
+
+// attach socket io object to request, to access it in routes
 app.use((req, res, next) => {
 	req.io = io;
 	next();
 });
+
+// attach response handler lib to express
 app.use(boom());
+
+/*
+ * credentials: true is needed for cookie auth
+ * the origin needs to match the frontend domain
+ * otherwise the requests fail because of cors
+ */
 app.use(cors({ credentials: true, origin: process.env.FRONTEND }));
 configPassport(app);
 
+// attach http logger to express
 app.use(httpLogger);
 app.use(bodyParser.json());
 app.use(

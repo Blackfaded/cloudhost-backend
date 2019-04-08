@@ -1,0 +1,25 @@
+{
+	"plugins": [],
+	"recurseDepth": 10,
+	"source": {
+		"includePattern": ".+\\.js(doc|x)?$",
+		"excludePattern": "(^|\\/|\\\\)_",
+		"exclude": ["node_modules"]
+	},
+	"sourceType": "module",
+	"tags": {
+		"allowUnknownTags": true,
+		"dictionaries": ["jsdoc", "closure"]
+	},
+	"templates": {
+		"cleverLinks": false,
+		"monospaceLinks": false
+	},
+	"opts": {
+		"template": "./node_modules/jaguarjs-jsdoc",
+		"encoding": "utf8",
+		"destination": "docs/",
+		"recurse": true,
+		"verbose": true
+	}
+}

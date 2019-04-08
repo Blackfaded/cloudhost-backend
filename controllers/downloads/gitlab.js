@@ -3,7 +3,12 @@ const path = require('path');
 const fs = require('fs');
 const axios = require('../../config/axios');
 
-class Downloader {
+/** Class that controls downloads from Gitlab */
+class DownloadController {
+	/**
+	 * Creates a temporary directory
+	 * @returns {Promise.<String>} The temp dir path
+	 */
 	makeTempDir() {
 		const dir = path.join(__dirname, '../../tmp');
 		if (!fs.existsSync(dir)) {
@@ -15,6 +20,15 @@ class Downloader {
 		});
 	}
 
+	/**
+	 * Fetches repository from gitlab
+	 * @param {object} user The current user object
+	 * @param  {object} options
+	 * @param  {string} options.repositoryId The repository ID
+	 * @param  {string} options.repositoryBranch The repository branch name
+	 * @param  {string} options.archive The archive name
+	 * @returns {Promise} The download promise
+	 */
 	getRepositoryArchive(user, options, socket) {
 		const { repositoryId, repositoryBranch, archive } = options;
 		return new Promise(async (resolve, reject) => {
@@ -41,7 +55,9 @@ class Downloader {
 						if (progress >= oldProgress + 5) {
 							oldProgress = progress;
 							console.log({ downloaded, downloadSize, progress });
-							socket.emit('repoDownloadProgress', { progress });
+							if (socket) {
+								socket.emit('repoDownloadProgress', { progress });
+							}
 						}
 
 						output.write(Buffer.from(chunk));
@@ -51,7 +67,6 @@ class Downloader {
 				});
 
 				output.end();
-				console.log(dir);
 				resolve(dir);
 			} catch (error) {
 				reject(error);
@@ -60,4 +75,4 @@ class Downloader {
 	}
 }
 
-module.exports = new Downloader();
+module.exports = new DownloadController();
