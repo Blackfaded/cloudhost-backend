@@ -21,6 +21,7 @@ class ContainerController {
 	 * Starts the docker container name from given user and appName
 	 * @param  {object} user The current user object
 	 * @param  {string} appName Apps Name
+	 * @returns {Promise}
 	 */
 	async startApplicationContainer(user, appName) {
 		const containerName = this.getContainerName(user, appName);
@@ -35,6 +36,7 @@ class ContainerController {
 	 * Stops the docker container name from given user and appName
 	 * @param  {object} user The current user object
 	 * @param  {string} appName Apps Name
+	 * @returns {Promise}
 	 */
 	async stopApplicationContainer(user, appName) {
 		const containerName = this.getContainerName(user, appName);
@@ -111,7 +113,7 @@ class ContainerController {
 	}
 
 	/**
-	 * Creates or reuses the mongoDB container name from given user
+	 * Creates or reuses the mongoDB container from given user
 	 * @example
 	 * const user = req.user
 	 * const appName = "mongoDB"
@@ -140,7 +142,7 @@ class ContainerController {
 	}
 
 	/**
-	 * Creates or reuses the mongo express container name from given user
+	 * Creates or reuses the mongo express container from given user
 	 * @example
 	 * const user = req.user
 	 * const appName = "mongoExpress"
