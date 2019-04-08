@@ -26,7 +26,7 @@ router.delete('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
 	const usersNetworkName = networkController.getUsersNetWorkName(req.user);
-
+	await networkController.createNetwork(usersNetworkName);
 	const mongoContainer = await containerController.createMongoContainer(req.user, mongoAppName);
 
 	const mongoExpressContainer = await containerController.createMongoExpressContainer(
