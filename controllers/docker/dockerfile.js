@@ -31,7 +31,8 @@ class DockerfileController {
     LABEL traefik.docker.network="traefik"
     LABEL traefik.frontend.rule="Host:${host};PathPrefixStrip:/${mountPath}"
     LABEL traefik.port="8080"
-    CMD ["npm", "run", "${runScript}"]`;
+		CMD ["npm", "run", "${runScript}"]
+		USER node`;
 	}
 
 	/**

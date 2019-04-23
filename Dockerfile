@@ -5,4 +5,4 @@ RUN npm i
 
 FROM modules as build
 COPY . .
-RUN npm run build
+RUN npm run start

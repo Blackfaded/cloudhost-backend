@@ -14,7 +14,7 @@ services:
    - .:/usr/app/backend/
    - /usr/app/frontend/node_modules
   env_file:
-   - .env.production
+   - .env.staging
   networks:
    - app
    - traefik
@@ -30,7 +30,7 @@ services:
   ports:
    - '3306:3306'
   env_file:
-   - .env.production
+   - .env.staging
   environment:
    GITLAB_TOKEN: ''
    GITLAB_DOMAIN: ''
@@ -39,6 +39,6 @@ services:
 
 networks:
   traefik:
-   external: true
+    external: true
   app:
    driver: bridge

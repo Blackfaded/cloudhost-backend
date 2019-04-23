@@ -6,10 +6,12 @@
 		"docs": "jsdoc . -c ./jsdoc.json ",
 		"dev": "cross-env NODE_ENV=development DEBUG=cloudhost:* nodemon -L ./bin/www",
 		"start": "cross-env NODE_ENV=production node ./bin/www",
-		"docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up",
-		"docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
-		"docker:rebuild:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml build --force-rm",
-		"docker:rebuild:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --force-rm"
+		"docker:prod": "docker-compose -f docker-compose.prod.yml up",
+		"docker:staging": "docker-compose -f docker-compose.staging.yml up",
+		"docker:dev": "docker-compose -f docker-compose.dev.yml up",
+		"docker:rebuild:dev": "docker-compose -f docker-compose.dev.yml build --force-rm",
+		"docker:rebuild:staging": "docker-compose -f docker-compose.staging.yml build --force-rm",
+		"docker:rebuild:prod": "docker-compose -f docker-compose.prod.yml build --force-rm"
 	},
 	"lint-staged": {
 		"src/**/*.js": [
