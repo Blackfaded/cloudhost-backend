@@ -2,19 +2,16 @@ version: '3.4'
 services:
  backend:
   build: .
-  image: cloudhost/backend_production:latest
+  image: cloudhost/backend_staging:latest
+  command: npm run start:staging
   labels:
    - 'traefik.enable=true' 
    - 'traefik.backend=cloudhost-API'
    - 'traefik.docker.network=traefik'
-   - 'traefik.frontend.rule=Host:api.cloudhost.hsrw.eu'
+   - 'traefik.frontend.rule=Host:staging.cloudhost.hsrw.eu;PathPrefix:/api'
    - 'traefik.port=3000'
   volumes:
    - /var/run/docker.sock:/var/run/docker.sock:ro
-   - .:/usr/app/backend/
-   - /usr/app/frontend/node_modules
-  env_file:
-   - .env.staging
   networks:
    - app
    - traefik

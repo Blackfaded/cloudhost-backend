@@ -9,7 +9,7 @@ components:
     description: Invalid credentials
 
 paths:
- /auth:
+ /api/auth:
   post:
    tags: [Login]
    description: Login to the application

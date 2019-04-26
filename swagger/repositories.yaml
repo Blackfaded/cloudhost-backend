@@ -6,7 +6,7 @@ components:
    description: Bad request
 
 paths:
- /repositories/{repositoryId}/branches:
+ /api/repositories/{repositoryId}/branches:
   get:
    security:
     - bearerAuth: []
@@ -32,7 +32,7 @@ paths:
      $ref: '#/components/responses/UnauthorizedError'
     500:
      $ref: '#/components/responses/BadRequest'
- /repositories/{repositoryId}/branches/{branchName}/runscripts:
+ /api/repositories/{repositoryId}/branches/{branchName}/runscripts:
   get:
    security:
     - bearerAuth: []

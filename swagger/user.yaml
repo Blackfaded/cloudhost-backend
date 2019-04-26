@@ -63,7 +63,7 @@ components:
      description: project path with namespace
 
 paths:
- /users:
+ /api/users:
   get:
    security:
     - bearerAuth: []
@@ -82,7 +82,7 @@ paths:
      $ref: '#/components/responses/UnauthorizedError'
     500:
      $ref: '#/components/responses/BadRequest'
- /users/self:
+ /api/users/self:
   get:
    security:
     - bearerAuth: []
@@ -117,7 +117,7 @@ paths:
      $ref: '#/components/responses/UnauthorizedError'
     500:
      $ref: '#/components/responses/BadRequest'
- /users/{email}:
+ /api/users/{email}:
   get:
    security:
     - bearerAuth: []
@@ -169,7 +169,7 @@ paths:
     500:
      $ref: '#/components/responses/BadRequest'
 
- /users/{email}/roles:
+ /api/users/{email}/roles:
   post:
    security:
     - bearerAuth: []
@@ -202,7 +202,7 @@ paths:
     500:
      $ref: '#/components/responses/BadRequest'
 
- /users/{email}/roles/{role}:
+ /api/users/{email}/roles/{role}:
   delete:
    security:
     - bearerAuth: []
@@ -228,7 +228,7 @@ paths:
     500:
      $ref: '#/components/responses/BadRequest'
 
- /users/{email}/projects:
+ /api/users/{email}/projects:
   get:
    security:
     - bearerAuth: []

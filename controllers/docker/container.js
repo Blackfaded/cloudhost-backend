@@ -83,7 +83,7 @@ class ContainerController {
 	 *     'traefik.backend': '/mongo/john.doe',
 	 *     'traefik.docker.network': 'traefik',
 	 *     'traefik.frontend.rule': 'Host:cloudhost.hsrw.eu;PathPrefix:/mongo/john.doe',
-	 *     'traefik.frontend.auth.forward.address': 'api.cloudhost.hsrw.eu/auth/mongoexpress',
+	 *     'traefik.frontend.auth.forward.address': 'cloudhost.hsrw.eu/api/auth/auth/mongoexpress',
 	 *     'traefik.port': '8081'
 	 *   ]
 	 * }

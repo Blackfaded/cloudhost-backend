@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('custom-env').env(process.env.NODE_ENV || 'development');
 const http = require('http');
 const debug = require('debug')('cloudhost:server');
 const io = require('../controllers/websocket');

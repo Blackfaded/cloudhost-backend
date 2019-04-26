@@ -52,7 +52,7 @@ components:
      description: Username of the app owner
 
 paths:
- /applications:
+ /api/applications:
   get:
    security:
     - bearerAuth: []
@@ -122,7 +122,7 @@ paths:
      $ref: '#/components/responses/UnauthorizedError'
     500:
      $ref: '#/components/responses/BadRequest'
- /applications/{appName}:
+ /api/applications/{appName}:
   get:
    security:
     - bearerAuth: []
@@ -155,7 +155,7 @@ paths:
      $ref: '#/components/responses/UnauthorizedError'
     500:
      $ref: '#/components/responses/BadRequest'
- /applications/{appName}/stop:
+ /api/applications/{appName}/stop:
   post:
    security:
     - bearerAuth: []
@@ -170,7 +170,7 @@ paths:
      $ref: '#/components/responses/UnauthorizedError'
     500:
      $ref: '#/components/responses/BadRequest'
- /applications/{appName}/start:
+ /api/applications/{appName}/start:
   post:
    security:
     - bearerAuth: []
