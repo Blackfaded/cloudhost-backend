@@ -7,7 +7,6 @@ const { isAdmin } = require('../../../middlewares/roles');
 
 const router = express.Router();
 
-console.log({ swaggerOptions });
 const specs = swaggerJsdoc({
 	swaggerDefinition: swaggerOptions,
 	apis: swaggerOptions.apis,

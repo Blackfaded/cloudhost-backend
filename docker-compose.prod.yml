@@ -8,8 +8,10 @@ services:
    - 'traefik.enable=true' 
    - 'traefik.backend=cloudhost-API'
    - 'traefik.docker.network=traefik'
-   - 'traefik.frontend.rule=Host:cloudhost.hsrw.eu;PathPrefix:/api'
+   - 'traefik.frontend.rule=Host:api.cloudhost.hsrw.eu'
    - 'traefik.port=3000'
+  extra_hosts:
+   - 'git.hsrw.eu:10.2.16.53'
   volumes:
    - /var/run/docker.sock:/var/run/docker.sock:ro
   networks:
