@@ -2,7 +2,7 @@ const docker = require('./index');
 const { appLogger } = require('../../config/winston');
 const applicationController = require('../application');
 const userController = require('../user');
-const { host } = require('../../config/connections');
+const { host, backend } = require('../../config/connections');
 
 /** Class that controls Docker containers */
 class ContainerController {
@@ -107,6 +107,11 @@ class ContainerController {
 		}
 		if (labels) {
 			createContainerOpts.Labels = labels;
+		}
+		if (process.env.NODE_ENV !== 'development') {
+			createContainerOpts.HostConfig = {
+				ExtraHosts: [`${backend};10.2.16.48`]
+			};
 		}
 
 		return docker.createContainer(createContainerOpts);

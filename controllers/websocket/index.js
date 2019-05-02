@@ -1,6 +1,8 @@
 const io = require('socket.io')();
 const logController = require('./logs');
 
+io.path('/api/socket.io');
+
 io.on('connection', (socket) => {
 	console.log('User connected');
 	console.log(socket.id);
