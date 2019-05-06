@@ -8,41 +8,27 @@ const models = require('../database/models');
 const umzug = require('../database/umzug');
 const { appLogger } = require('../config/winston');
 const app = require('../app');
-
 const initializer = require('../controllers/initialize');
-
-/**
- * Get port from environment and store in Express.
- */
 
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-
+// Erstelle Server
 const server = http.createServer(app);
 io.listen(server);
-/**
- * Listen on provided port, on all network interfaces.
- */
 
+// Synchronisiere Datenbank
 models.sequelize.sync().then(async () => {
-	/**
-	 * Listen on provided port, on all network interfaces.
-	 */
+	// Führe Migrations durch
 	umzug.up();
+
+	// Initializiere App
 	await initializer.init();
 
 	server.listen(port);
 	server.on('error', onError);
 	server.on('listening', onListening);
 });
-
-/**
- * Normalize a port into a number, string, or false.
- */
 
 function normalizePort(val) {
 	const port = parseInt(val, 10);

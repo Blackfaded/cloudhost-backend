@@ -180,7 +180,11 @@ class ContainerController {
 						'traefik.enable': 'true',
 						'traefik.backend': `/mongo/${user.email.split('@')[0]}`,
 						'traefik.docker.network': 'traefik',
+						// Mongo-Express Service ist erreichbar unter cloudhost.hsrw.eu/mongo/username
 						'traefik.frontend.rule': `Host:${host};PathPrefix:/mongo/${user.email.split('@')[0]}`,
+						/* Service wird nur erreicht, wenn dieser Endpunkt einen HTTP Statuscode mit 2xx zurück gibt.
+						 * Ansonsten wird Traefik den Request abbrechen und eine 401 an den Client zurücksenden.
+						 */
 						'traefik.frontend.auth.forward.address':
 							'http://cloudhost-backend_backend_1/api/auth/mongoexpress',
 						'traefik.port': '8081'

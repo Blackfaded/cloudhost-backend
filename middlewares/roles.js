@@ -13,6 +13,8 @@
  */
 async function isAdmin(req, res, next) {
 	try {
+		/* Sofern das Nutzerobjekt die Rolle 'admin' hat wird der Request weitergeleitet,
+		 * ansonsten wird eine 403 gesendet */
 		if (req.user.roles.some((role) => role.name === 'admin')) {
 			next();
 		} else {

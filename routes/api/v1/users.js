@@ -5,6 +5,7 @@ const { isAdmin } = require('../../../middlewares/roles');
 
 const router = express.Router();
 
+// Hole den momentanen Nutzer
 router.get('/self', async (req, res) => {
 	try {
 		const { user } = req;

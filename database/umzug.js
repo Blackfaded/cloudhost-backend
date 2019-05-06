@@ -7,6 +7,8 @@ const umzug = new Umzug({
 	storageOptions: {
 		sequelize: db.sequelize
 	},
+
+	// Optionen der Migrationen
 	migrations: {
 		params: [
 			db.sequelize.getQueryInterface(), // queryInterface
