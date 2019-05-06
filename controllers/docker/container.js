@@ -2,7 +2,7 @@ const docker = require('./index');
 const { appLogger } = require('../../config/winston');
 const applicationController = require('../application');
 const userController = require('../user');
-const { host, backend } = require('../../config/connections');
+const { host } = require('../../config/connections');
 
 /** Class that controls Docker containers */
 class ContainerController {
@@ -56,8 +56,16 @@ class ContainerController {
 		try {
 			const containerName = this.getContainerName(user, appName);
 			const oldContainer = await docker.getContainer(containerName);
-			await oldContainer.inspect();
-			return oldContainer.remove({ force: true });
+
+			const inspectedContainer = await oldContainer.inspect();
+			const imageName = inspectedContainer.Config.Image;
+			const image = await docker.getImage(imageName);
+			await oldContainer.remove({ force: true });
+			try {
+				return await image.remove();
+			} catch (error) {
+				return Promise.resolve();
+			}
 		} catch (error) {
 			if (error.statusCode === 404) {
 				return Promise.resolve();
@@ -107,11 +115,6 @@ class ContainerController {
 		}
 		if (labels) {
 			createContainerOpts.Labels = labels;
-		}
-		if (process.env.NODE_ENV !== 'development') {
-			createContainerOpts.HostConfig = {
-				ExtraHosts: [`${backend};10.2.16.48`]
-			};
 		}
 
 		return docker.createContainer(createContainerOpts);
@@ -178,7 +181,8 @@ class ContainerController {
 						'traefik.backend': `/mongo/${user.email.split('@')[0]}`,
 						'traefik.docker.network': 'traefik',
 						'traefik.frontend.rule': `Host:${host};PathPrefix:/mongo/${user.email.split('@')[0]}`,
-						'traefik.frontend.auth.forward.address': `${process.env.BACKEND}/auth/mongoexpress`,
+						'traefik.frontend.auth.forward.address':
+							'http://cloudhost-backend_backend_1/api/auth/mongoexpress',
 						'traefik.port': '8081'
 					}
 				});

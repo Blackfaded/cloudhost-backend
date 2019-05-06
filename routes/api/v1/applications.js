@@ -40,7 +40,6 @@ router.delete('/:appName', async (req, res) => {
 		await applicationController.destroyByAppName(user, appName);
 		return res.status(200).send();
 	} catch (error) {
-		console.log({ error });
 		return res.boom.badImplementation();
 	}
 });
@@ -73,6 +72,9 @@ router.post('/', async (req, res) => {
 			socket
 		);
 
+		await applicationController.destroyByAppName(req.user, appName);
+		await containerController.removeContainer(req.user, appName);
+
 		await dockerfileController.createDockerfile(req.user, {
 			dir: path,
 			archive,
@@ -97,8 +99,6 @@ router.post('/', async (req, res) => {
 		);
 
 		socket.emit('beginStartApplication');
-		await applicationController.destroyByAppName(req.user, appName);
-		await containerController.removeContainer(req.user, appName);
 
 		const usersNetworkName = networkController.getUsersNetWorkName(req.user);
 		await networkController.createNetwork(usersNetworkName);

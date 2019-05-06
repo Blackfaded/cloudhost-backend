@@ -43,7 +43,6 @@ router.get('/:email', isAdmin, async (req, res) => {
 });
 
 router.patch('/:email', isAdmin, async (req, res) => {
-	console.log(req.body);
 	try {
 		if (
 			Object.prototype.hasOwnProperty.call(req.body, 'active') &&
