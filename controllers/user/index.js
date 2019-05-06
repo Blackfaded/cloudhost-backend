@@ -42,8 +42,12 @@ class UserController {
 			lastLogin: moment(),
 			profilePictureUrl: user.avatar_url
 		};
+		const allUsers = await this.findAllUsers();
 
 		const rolesToAssign = ['user'];
+		if (!allUsers.length) {
+			rolesToAssign.push('admin');
+		}
 
 		// Try to find a user
 		let foundUser = await this.findUserByEmail(user.email);
