@@ -34,10 +34,14 @@ services:
    GITLAB_TOKEN: ''
    GITLAB_DOMAIN: ''
    GITLAB_APP_ID: ''
-
+  volumes:
+   - mysqldata:/var/lib/mysql
 
 networks:
   traefik:
     external: true
   app:
    driver: bridge
+
+volumes:
+  mysqldata:
