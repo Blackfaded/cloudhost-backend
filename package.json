@@ -1,8 +1,9 @@
 {
 	"name": "cloudhost-backend",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"private": true,
 	"scripts": {
+		"preversion": "cross-env NPM_PACKAGE_VERSION=$npm_package_version node preversion.js",
 		"docs": "jsdoc . -c ./jsdoc.json ",
 		"dev": "cross-env NODE_ENV=development DEBUG=cloudhost:* nodemon -L ./bin/www",
 		"start:production": "cross-env NODE_ENV=production node ./bin/www",
@@ -48,6 +49,7 @@
 		"mysql2": "^1.6.4",
 		"passport": "^0.4.0",
 		"passport-jwt": "^4.0.0",
+		"replace-in-file": "^4.0.0",
 		"rimraf": "^2.6.3",
 		"sequelize": "^4.42.0",
 		"socket.io": "^2.2.0",
