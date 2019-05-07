@@ -4,7 +4,7 @@ services:
   build:
    context: .
    target: modules
-  image: cloudhost/backend_development:0.0.1
+  image: cloudhost/backend_development:0.0.2
   command: npm run dev
   labels:
    - 'traefik.enable=true'

@@ -2,7 +2,7 @@ version: '3.4'
 services:
  backend:
   build: .
-  image: cloudhost/backend_production:latest
+  image: cloudhost/backend_production:0.0.2
   command: npm run start:production
   labels:
    - 'traefik.enable=true' 
