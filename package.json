@@ -1,6 +1,6 @@
 {
 	"name": "cloudhost-backend",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"private": true,
 	"scripts": {
 		"preversion": "cross-env NPM_PACKAGE_VERSION=$npm_package_version node preversion.js",
