@@ -12,7 +12,6 @@ io.on('connection', (socket) => {
 });
 
 io.of('/logs').on('connection', (socket) => {
-	console.log('id', socket.id);
 	socket.on('getLogs', logController.sendLogs(socket));
 });
 
