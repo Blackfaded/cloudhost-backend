@@ -185,9 +185,7 @@ class ContainerController {
 						/* Service wird nur erreicht, wenn dieser Endpunkt einen HTTP Statuscode mit 2xx zurück gibt.
 						 * Ansonsten wird Traefik den Request abbrechen und eine 401 an den Client zurücksenden.
 						 * cloudhost-backend_backend_1 must match the docer container name of the backend api */
-						'traefik.frontend.auth.forward.address': `http${
-							process.env.NODE_ENV !== 'development' ? 's' : ''
-						}://cloudhost-backend_backend_1:3000/api/auth/mongoexpress`,
+						'traefik.frontend.auth.forward.address': 'http://cloudhost-backend_backend_1:3000/api/auth/mongoexpress',
 					}
 				});
 				appLogger.info(`created mongo-express container for user ${user.email}.`);
