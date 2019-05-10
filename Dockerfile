@@ -5,3 +5,4 @@ RUN npm i
 
 FROM modules as build
 COPY . .
+EXPOSE 3000

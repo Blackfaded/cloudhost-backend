@@ -10,7 +10,7 @@ const { appLogger } = require('../config/winston');
 const app = require('../app');
 const initializer = require('../controllers/initialize');
 
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort('3000');
 app.set('port', port);
 
 // Erstelle Server
