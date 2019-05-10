@@ -203,17 +203,26 @@ class ContainerController {
 	 * @returns {Promise}
 	 */
 	async startAllRunningUserContainers() {
+		// get all running applications
 		const applications = await applicationController.findAllRunningContainers();
 		// eslint-disable-next-line
 		return applications.reduce(async (promise, application) => {
 			await promise;
 
-			const { appName, user_id } = application; // eslint-disable-line
-			const userName = user_id.split('@')[0];
+			// extract name of the app and the users ID
+			const { appName, user_id, running } = application; // eslint-disable-line
+
+			// get users name
+			const userName = userController.getUserName(user_id);
+
+			// get containerName
 			const containerName = this.getContainerName({ userName }, appName);
 			try {
+				// get container of users app
 				const foundContainer = await docker.getContainer(containerName);
+				// see if the container is running
 				const inspectedContainer = await foundContainer.inspect();
+				// if not running start it
 				if (!inspectedContainer.State.Running) {
 					await foundContainer.start();
 					appLogger.info(`started container ${containerName}`);
@@ -222,6 +231,7 @@ class ContainerController {
 				}
 			} catch (error) {
 				if (error.statusCode === 404) {
+					// if application has flag running but it not found on system delete it from db
 					appLogger.info(
 						`Container with id ${containerName} found in Database, but not as a container.
 						 Removing application from Database`
@@ -242,18 +252,23 @@ class ContainerController {
 	 * @returns {Promise}
 	 */
 	async startAllMongoContainers() {
+		// find all mongo containers
 		const users = await userController.findAllMongoContainers();
 		// eslint-disable-next-line
 		return users.reduce(async (promise, user) => {
 			await promise;
 
 			try {
+				// get mongo containers Name
 				const mongoContainerName = this.getContainerName(
 					{ userName: userController.getUserName(user) },
 					'mongoDB'
 				);
+
+				// get mongo container
 				const foundMongoContainer = await docker.getContainer(mongoContainerName);
 				const inspectedMongoContainer = await foundMongoContainer.inspect();
+				// see if container is running, if not start it
 				if (!inspectedMongoContainer.State.Running) {
 					await foundMongoContainer.start();
 					appLogger.info(`started mongo container from user ${user.email}`);
@@ -261,12 +276,16 @@ class ContainerController {
 					appLogger.info(`mongo container from user ${user.email} is already running`);
 				}
 
+				// get mongo-express containers Name
 				const mongoExpressContainerName = this.getContainerName(
 					{ userName: userController.getUserName(user) },
 					'mongoExpress'
 				);
+
+				// get mongo-express container
 				const foundMongExpressContainer = await docker.getContainer(mongoExpressContainerName);
 				const inspectedMongoExpressContainer = await foundMongExpressContainer.inspect();
+				// see if container is running, if not start it
 				if (!inspectedMongoExpressContainer.State.Running) {
 					await foundMongExpressContainer.start();
 					appLogger.info(`started mongo-express container from user ${user.email}`);
@@ -274,6 +293,7 @@ class ContainerController {
 					appLogger.info(`mongo-express container from user ${user.email} is already running`);
 				}
 			} catch (error) {
+				// if container was not found remove flag from db
 				if (error.statusCode === 404) {
 					await userController.updateUserFieldsByEmail(user.email, { hasMongoDB: false });
 					appLogger.info(

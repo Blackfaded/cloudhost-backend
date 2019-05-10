@@ -5,6 +5,7 @@ const axios = require('../../../config/axios');
 const config = require('../../../config/connections');
 const userController = require('../../../controllers/user');
 const { isAdmin } = require('../../../middlewares/roles');
+const { appLogger } = require('../../../config/winston');
 
 const router = express.Router();
 
@@ -51,10 +52,12 @@ router.post('/', async (req, res) => {
 			return res.boom.unauthorized('Your account is not active');
 		} catch (error) {
 			// Bei einem Fehler sende 401
+			appLogger.error(error);
 			return res.boom.unauthorized('An error occured while creating or updating the user');
 		}
 	} catch (e) {
 		// Bei einem Fehler sende 401
+		appLogger.error(e);
 		return res.boom.unauthorized('Invalid Credentials');
 	}
 });
@@ -79,6 +82,7 @@ router.get('/mongoexpress', passport.authenticate('jwt', { session: false }), (r
 		 * der nun keinen Zugriff auf den Mongo-Express Service bekommt */
 		return res.boom.unauthorized();
 	} catch (error) {
+		appLogger.error(error);
 		// Tritt ein Fehler auf wird der Request ebenfalls nicht weiter ausgeführt
 		return res.boom.unauthorized();
 	}
@@ -91,6 +95,7 @@ router.get('/portainer', passport.authenticate('jwt', { session: false }), isAdm
 	try {
 		return res.status(200).send();
 	} catch (error) {
+		appLogger.error(error);
 		return res.boom.unauthorized();
 	}
 });

@@ -1,6 +1,7 @@
 const { findUserByEmail } = require('../user');
 const models = require('../../database/models');
 const imagesController = require('../docker/images');
+const { appLogger } = require('../../config/winston');
 
 /** Class that controls Applications in Database */
 class ApplicationController {
@@ -45,7 +46,7 @@ class ApplicationController {
 			await foundUser.addApplication(app);
 			return app;
 		} catch (error) {
-			console.log({ error });
+			appLogger.error(error);
 			throw error;
 		}
 	}

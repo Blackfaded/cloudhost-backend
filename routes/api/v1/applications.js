@@ -7,6 +7,7 @@ const containerController = require('../../../controllers/docker/container');
 const dockerfileController = require('../../../controllers/docker/dockerfile');
 const applicationController = require('../../../controllers/application');
 const networkController = require('../../../controllers/docker/network');
+const { appLogger } = require('../../../config/winston');
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.get('/', async (req, res) => {
 		const applications = await applicationController.findAllByUser(req.user);
 		return res.json(applications.map((app) => app.get({ plain: true })));
 	} catch (error) {
+		appLogger.error(error);
 		return res.json([]);
 	}
 });
@@ -30,6 +32,7 @@ router.get('/:appName', async (req, res) => {
 		const applications = await applicationController.findByAppName(user, appName);
 		return res.json(applications[0]);
 	} catch (error) {
+		appLogger.error(error);
 		return res.json({});
 	}
 });
@@ -44,6 +47,7 @@ router.delete('/:appName', async (req, res) => {
 		await applicationController.destroyByAppName(user, appName);
 		return res.status(200).send();
 	} catch (error) {
+		appLogger.error(error);
 		return res.boom.badImplementation();
 	}
 });
@@ -160,6 +164,7 @@ router.post('/', async (req, res) => {
 		return res.json(newApplication);
 	} catch (error) {
 		// Return error
+		appLogger.error(error);
 		return res.boom.badRequest('An error occured while creating the application');
 	}
 });
@@ -174,6 +179,7 @@ router.post('/:appName/stop', async (req, res) => {
 		});
 		return res.status(200).send();
 	} catch (error) {
+		appLogger.error(error);
 		return res.boom.badImplementation('Container already stopped.');
 	}
 });
@@ -188,6 +194,7 @@ router.post('/:appName/start', async (req, res) => {
 		});
 		return res.status(200).send();
 	} catch (error) {
+		appLogger.error(error);
 		return res.boom.badImplementation('Container already stopped.');
 	}
 });

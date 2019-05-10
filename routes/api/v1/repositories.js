@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('../../../config/axios');
+const { appLogger } = require('../../../config/winston');
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.get('/:repositoryId/branches', async (req, res) => {
 		);
 		return res.json(branches.map((branch) => branch.name)).status(200);
 	} catch (error) {
-		console.log(error);
+		appLogger.error(error);
 		return res.boom.badRequest('An error occured while getting the branch');
 	}
 });
@@ -35,7 +36,7 @@ router.get('/:repositoryId/branches/:branchName/runScripts', async (req, res) =>
 		const runScripts = Object.keys(data.scripts);
 		return res.json(runScripts).status(200);
 	} catch (error) {
-		console.log(error);
+		appLogger.error(error);
 		return res.boom.badRequest('An error occured while getting the branch');
 	}
 });

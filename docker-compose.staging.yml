@@ -14,6 +14,7 @@ services:
    - 'git.hsrw.eu:10.2.16.53'
   volumes:
    - /var/run/docker.sock:/var/run/docker.sock:ro
+   - ./logs/:/usr/app/backend/logs
   networks:
    - app
    - traefik

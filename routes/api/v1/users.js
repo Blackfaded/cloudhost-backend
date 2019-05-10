@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('../../../config/axios');
 const userController = require('../../../controllers/user');
 const { isAdmin } = require('../../../middlewares/roles');
+const { appLogger } = require('../../../config/winston');
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.get('/self', async (req, res) => {
 		};
 		res.json(modifiedUser).status(200);
 	} catch (error) {
+		appLogger.error(error);
 		res.boom.badRequest('An error occured while getting user');
 	}
 });
@@ -30,6 +32,7 @@ router.get('/', isAdmin, async (req, res) => {
 		});
 		res.json(cleanedUser).status(200);
 	} catch (error) {
+		appLogger.error(error);
 		res.boom.badRequest('An error occured while getting users');
 	}
 });
@@ -39,6 +42,7 @@ router.get('/:email', isAdmin, async (req, res) => {
 		const user = await userController.findUserByEmail(req.params.email);
 		res.json(userController.cleanupUser(user)).status(200);
 	} catch (error) {
+		appLogger.error(error);
 		res.boom.badRequest('An error occured while getting user');
 	}
 });
@@ -57,6 +61,7 @@ router.patch('/:email', isAdmin, async (req, res) => {
 
 		return res.json(userController.cleanupUser(user)).status(200);
 	} catch (error) {
+		appLogger.error(error);
 		return res.boom.badRequest('An error occured while updating user');
 	}
 });
@@ -71,13 +76,13 @@ router.delete('/:email/roles/:rolename', isAdmin, async (req, res) => {
 
 			res.json(userController.cleanupUser(user)).status(200);
 		} catch (error) {
+			appLogger.error(error);
 			res.boom.badRequest('An error occured while deleting user role');
 		}
 	}
 });
 
 router.post('/:email/roles', isAdmin, async (req, res) => {
-	console.log(req.body);
 	const { role } = req.body;
 	const { email } = req.params;
 	const grantedBy = req.user.email;
@@ -86,6 +91,7 @@ router.post('/:email/roles', isAdmin, async (req, res) => {
 		const user = await userController.addUserRole(email, role, grantedBy);
 		res.json(userController.cleanupUser(user)).status(200);
 	} catch (error) {
+		appLogger.error(error);
 		res.boom.badRequest('An error occured while deleting user role');
 	}
 });
@@ -107,7 +113,7 @@ router.get('/:email/projects', async (req, res) => {
 		});
 		res.json(resProjects).status(200);
 	} catch (error) {
-		console.log(error);
+		appLogger.error(error);
 		res.boom.badRequest('An error occured while getting user');
 	}
 });

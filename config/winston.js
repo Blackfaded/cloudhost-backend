@@ -14,9 +14,9 @@ const { combine, timestamp, printf, colorize, json } = format; // eslint-disable
  * @param  {string} filename
  * @returns {object} Winstron file transporter
  */
-function configFileTransport(filename) {
+function configFileTransport(filename, level) {
 	return new transports.File({
-		level: 'info',
+		level,
 		filename: `${appRoot}/logs/${filename}.log`,
 		handleExceptions: true,
 		json: true,
@@ -44,7 +44,7 @@ function configConsoleTransport() {
 	});
 }
 
-const appTransports = [configFileTransport('app')];
+const appTransports = [configFileTransport('app', 'info'), configFileTransport('app-errors', 'error')];
 if (process.env.NODE_ENV === 'development') {
 	appTransports.push(configConsoleTransport());
 }
@@ -54,7 +54,7 @@ const appLogger = createLogger({
 	exitOnError: false
 });
 
-const httpTransports = [configFileTransport('http')];
+const httpTransports = [configFileTransport('http', 'info')];
 if (process.env.NODE_ENV === 'development') {
 	httpTransports.push(configConsoleTransport());
 }

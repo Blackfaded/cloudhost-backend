@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config/connections');
 const logController = require('../docker/logs');
 const userController = require('../user');
+const { appLogger } = require('../../config/winston');
 
 class LogController {
 	sendLogs(socket) {
@@ -16,11 +17,11 @@ class LogController {
 				});
 
 				socket.on('disconnect', () => {
-					console.log('logstream destroyed');
+					appLogger.info('logstream destroyed');
 					logStream.destroy();
 				});
 			} catch (error) {
-				console.log({ error });
+				appLogger.error(error);
 			}
 		};
 	}

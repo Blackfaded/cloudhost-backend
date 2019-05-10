@@ -3,6 +3,7 @@ const express = require('express');
 const containerController = require('../../../controllers/docker/container');
 const networkController = require('../../../controllers/docker/network');
 const userController = require('../../../controllers/user');
+const { appLogger } = require('../../../config/winston');
 
 const router = express.Router();
 const mongoAppName = 'mongoDB';
@@ -19,7 +20,8 @@ router.get('/', async (req, res) => {
 		}
 		// Falls der Nutzer keine Datenbank hat gebe leeren String zurück
 		return res.status(200).send({ connectionString: '' });
-	} catch (e) {
+	} catch (error) {
+		appLogger.error(error);
 		return res.boom.badImplementation();
 	}
 });
@@ -33,6 +35,7 @@ router.delete('/', async (req, res) => {
 		await userController.updateUserFieldsByEmail(req.user.email, { hasMongoDB: false });
 		return res.status(200).send({ connectionString: '' });
 	} catch (error) {
+		appLogger.error(error);
 		return res.boom.badImplementation();
 	}
 });
@@ -77,6 +80,7 @@ router.post('/', async (req, res) => {
 		const containerName = containerController.getContainerName(req.user, mongoAppName);
 		return res.status(200).send({ connectionString: containerName });
 	} catch (error) {
+		appLogger.error(error);
 		return res.boom.badImplementation();
 	}
 });

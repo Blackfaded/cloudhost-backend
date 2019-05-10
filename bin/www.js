@@ -19,15 +19,19 @@ io.listen(server);
 
 // Synchronisiere Datenbank
 models.sequelize.sync().then(async () => {
-	// Führe Migrations durch
-	umzug.up();
+	try {
+		// Führe Migrations durch
+		umzug.up();
 
-	// Initializiere App
-	await initializer.init();
+		// Initializiere App
+		await initializer.init();
 
-	server.listen(port);
-	server.on('error', onError);
-	server.on('listening', onListening);
+		server.listen(port);
+		server.on('error', onError);
+		server.on('listening', onListening);
+	} catch (error) {
+		appLogger.info(error);
+	}
 });
 
 function normalizePort(val) {
