@@ -187,7 +187,7 @@ class ContainerController {
 						 * cloudhost-backend_backend_1 must match the docer container name of the backend api */
 						'traefik.frontend.auth.forward.address': `http${
 							process.env.NODE_ENV !== 'development' ? 's' : ''
-						}://cloudhost-backend_backend_1/api/auth/mongoexpress`,
+						}://cloudhost-backend_backend_1:3000/api/auth/mongoexpress`,
 					}
 				});
 				appLogger.info(`created mongo-express container for user ${user.email}.`);
