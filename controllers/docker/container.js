@@ -188,7 +188,6 @@ class ContainerController {
 						'traefik.frontend.auth.forward.address': `http${
 							process.env.NODE_ENV !== 'development' ? 's' : ''
 						}://cloudhost-backend_backend_1/api/auth/mongoexpress`,
-						'traefik.port': '8081'
 					}
 				});
 				appLogger.info(`created mongo-express container for user ${user.email}.`);
@@ -211,10 +210,10 @@ class ContainerController {
 			await promise;
 
 			// extract name of the app and the users ID
-			const { appName, user_id, running } = application; // eslint-disable-line
+			const { appName, user_id } = application; // eslint-disable-line
 
 			// get users name
-			const userName = userController.getUserName(user_id);
+			const userName = user_id.split('@')[0];
 
 			// get containerName
 			const containerName = this.getContainerName({ userName }, appName);
