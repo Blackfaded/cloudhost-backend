@@ -16,6 +16,7 @@ services:
   volumes:
    - /var/run/docker.sock:/var/run/docker.sock:ro
    - ./logs/:/usr/app/backend/logs
+   - ./logs/npm:/root/.npm/_logs
   networks:
    - app
    - traefik
