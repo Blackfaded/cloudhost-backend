@@ -4,6 +4,7 @@ services:
   build: .
   image: cloudhost/backend_staging:1.0.0
   command: npm run start:staging
+  restart: always
   labels:
    - 'traefik.enable=true' 
    - 'traefik.backend=cloudhost-API'
