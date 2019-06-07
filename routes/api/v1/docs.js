@@ -13,7 +13,7 @@ const specs = swaggerJsdoc({
 	host: swaggerOptions.host
 });
 
-router.use('/api', swaggerUi.serve, swaggerUi.setup(specs));
+router.use('/api', isAdmin, swaggerUi.serve, swaggerUi.setup(specs));
 
 router.use('/controller', isAdmin, express.static(path.join(__dirname, '../../../docs')));
 
