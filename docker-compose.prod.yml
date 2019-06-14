@@ -4,6 +4,7 @@ services:
   build: .
   image: cloudhost/backend_production:1.0.0
   command: npm run start:production
+  container_name: cloudhost-backend_backend_1
   restart: always
   labels:
    - 'traefik.enable=true' 
@@ -36,10 +37,15 @@ services:
    GITLAB_TOKEN: ''
    GITLAB_DOMAIN: ''
    GITLAB_APP_ID: ''
-
+  volumes:
+   - mysqldata:/var/lib/mysql
 
 networks:
   traefik:
    external: true
   app:
    driver: bridge
+
+
+volumes:
+  mysqldata:
