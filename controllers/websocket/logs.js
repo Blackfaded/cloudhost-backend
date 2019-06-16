@@ -11,7 +11,7 @@ class LogController {
 				const { token, appName } = data;
 				const decoded = jwt.verify(token, config.jwt.secret);
 				const userName = userController.getUserName({ email: decoded.email });
-				const logStream = await logController.getLogStream(userName, appName);
+				const { logStream, containerStream } = await logController.getLogStream(userName, appName);
 				logStream.on('data', (chunk) => {
 					socket.emit('logs', chunk.toString('utf8'));
 				});
@@ -19,6 +19,7 @@ class LogController {
 				socket.on('disconnect', () => {
 					appLogger.info('logstream destroyed');
 					logStream.destroy();
+					containerStream.destroy();
 				});
 			} catch (error) {
 				appLogger.error(error);

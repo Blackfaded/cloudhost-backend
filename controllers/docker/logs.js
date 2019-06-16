@@ -28,7 +28,7 @@ class LogController {
 
 		container.modem.demuxStream(containerStream, logStream, logStream);
 
-		return logStream;
+		return { logStream, containerStream };
 	}
 }
 
