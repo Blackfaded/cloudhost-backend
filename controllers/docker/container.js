@@ -61,11 +61,14 @@ class ContainerController {
 			const imageName = inspectedContainer.Config.Image;
 			const image = await docker.getImage(imageName);
 			await oldContainer.remove({ force: true });
-			try {
-				return await image.remove();
-			} catch (error) {
-				return Promise.resolve();
+			if (appName !== 'mongoDB' || appName !== 'mongoExpress') {
+				try {
+					return await image.remove();
+				} catch (error) {
+					return Promise.resolve();
+				}
 			}
+			return Promise.resolve();
 		} catch (error) {
 			if (error.statusCode === 404) {
 				return Promise.resolve();
