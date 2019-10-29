@@ -52,7 +52,7 @@
 		"passport-jwt": "^4.0.0",
 		"replace-in-file": "^4.0.0",
 		"rimraf": "^2.6.3",
-		"sequelize": "^4.42.0",
+		"sequelize": "^5.15.1",
 		"socket.io": "^2.2.0",
 		"swagger-jsdoc": "^3.2.8",
 		"swagger-ui-express": "^4.0.2",
