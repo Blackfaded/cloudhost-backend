@@ -39,7 +39,7 @@
 		"dockerode": "^2.5.8",
 		"express": "^4.16.4",
 		"express-boom": "^2.0.0",
-		"express-jwt": "^5.3.1",
+		"express-jwt": "^6.0.0",
 		"express-winston": "^3.0.1",
 		"jaguarjs-jsdoc": "^1.1.0",
 		"js-cookie": "^2.2.0",
